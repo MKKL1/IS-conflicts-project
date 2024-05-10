@@ -1,56 +1,49 @@
 package islab.project.conflictsserver.services;
 
 import islab.project.conflictsserver.data.ConflictIntensity;
-import islab.project.conflictsserver.data.ConflictPOJO;
+import islab.project.conflictsserver.data.ConflictRowData;
 import islab.project.conflictsserver.data.ConflictType;
 import islab.project.conflictsserver.data.excel.XLSConverter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 
 @Service
 public class DataImportService {
 
-    public List<ConflictPOJO> importConflictData(File file) {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return importConflictData(fileInputStream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<ConflictPOJO> importConflictData(InputStream inputStream) {
-        return XLSConverter.convert(inputStream, row -> {
+    public List<ConflictRowData> importConflictData(InputStream inputStream) throws IOException {
+        return filterConflictData(XLSConverter.convert(inputStream, row -> {
 
             Cell endTimeCell = row.getCell(17);
-
-            return ConflictPOJO.builder()
+            return ConflictRowData.builder()
                     .docId((int) row.getCell(0).getNumericCellValue())
                     .location(row.getCell(1).getStringCellValue())
                     .sideA(row.getCell(2).getStringCellValue())
                     .sideB(row.getCell(4).getStringCellValue())
+                    .year((int) row.getCell(8).getNumericCellValue())
                     .intensity(ConflictIntensity.getById((int) row.getCell(9).getNumericCellValue()))
                     .type(ConflictType.getById((int) row.getCell(11).getNumericCellValue()))
                     .startTime(row.getCell(12).getLocalDateTimeCellValue().toLocalDate())
                     .endTime(endTimeCell != null && endTimeCell.getCellType() != CellType.BLANK ? endTimeCell.getLocalDateTimeCellValue().toLocalDate() : null)
-//                        .docId(row.getCellAsNumber(0).orElseThrow(() -> new RuntimeException("index 0 was empty")).intValue())
-//                        .location(row.getCellText(1))
-//                        .sideA(row.getCellText(2))
-//                        .sideB(row.getCellText(4))
-//                        .intensity(ConflictIntensity.getById(row.getCellAsNumber(9).orElseThrow(() -> new RuntimeException("index 9 was empty")).intValue()))
-//                        .type(ConflictType.getById(row.getCellAsNumber(11).orElseThrow(() -> new RuntimeException("index 11 was empty")).intValue()))
-//                        .startTime(row.getCellAsDate(12).orElseThrow(() -> new RuntimeException("index 12 was empty")).toLocalDate())
-//                        .endTime(row.getCellAsDate(17).map(LocalDateTime::toLocalDate).orElse(null))
                     .build();
-        }, true);
+        }, true));
+    }
+
+    //Concatenate rows with same id
+    private List<ConflictRowData> filterConflictData(Collection<ConflictRowData> conflictData) {
+        List<ConflictRowData> filteredData = new ArrayList<>();
+        conflictData.stream()
+                .collect(Collectors.groupingBy(ConflictRowData::getDocId))
+                .forEach((integer, groupedData) ->
+                    filteredData.add(groupedData.stream()
+                                    .max(Comparator.comparingInt(ConflictRowData::getYear))
+                                    .orElseThrow()));
+        return filteredData;
     }
 }

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class XLSConverter {
 
-    public static <T> List<T> convert(InputStream inputStream, Function<Row, T> rowFactory, boolean skipHeader) {
+    public static <T> List<T> convert(InputStream inputStream, Function<Row, T> rowFactory, boolean skipHeader) throws IOException {
         List<T> rowList = new ArrayList<>();
         try(Workbook workbook = new HSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -28,8 +28,6 @@ public class XLSConverter {
                 rowList.add(rowFactory.apply(rowIterator.next()));
             }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return rowList;
     }

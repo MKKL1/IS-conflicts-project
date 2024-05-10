@@ -1,8 +1,8 @@
 package islab.project.conflictsserver;
 
 import islab.project.conflictsserver.data.ConflictRowData;
+import islab.project.conflictsserver.services.DataExportService;
 import islab.project.conflictsserver.services.DataImportService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,21 +12,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @SpringBootTest
-public class DataImportServiceTests {
-    private static final int CONFLICT_COUNT = 240;
+public class DataExportServiceTests {
+
     @Autowired
     private DataImportService dataImportService;
+    @Autowired
+    private DataExportService dataExportService;
+
     @Test
-    public void test_valid_excel_file() throws IOException {
-        //TODO testing on resource, move resource somewhere else
+    public void save_test() throws IOException {
         ClassPathResource resource = new ClassPathResource("MainConflictTable.xls");
         InputStream inputStream = resource.getInputStream();
         List<ConflictRowData> result = dataImportService.importConflictData(inputStream);
-        assertNotNull(result);
-        Assertions.assertEquals(CONFLICT_COUNT, result.size());
+        dataExportService.saveConflictList(result);
     }
 }

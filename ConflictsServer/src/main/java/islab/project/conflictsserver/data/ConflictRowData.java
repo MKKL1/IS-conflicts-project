@@ -1,19 +1,17 @@
 package islab.project.conflictsserver.data;
 
+import islab.project.conflictsserver.entity.Conflict;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Optional;
 @Builder
 @AllArgsConstructor
-public class ConflictPOJO {
+public class ConflictRowData {
     @NotNull
     @Getter
     private final int docId;
@@ -40,6 +38,10 @@ public class ConflictPOJO {
 
     @NotNull
     @Getter
+    private final int year;
+
+    @NotNull
+    @Getter
     private final LocalDate startTime;
 
     @Nullable
@@ -47,5 +49,18 @@ public class ConflictPOJO {
 
     public Optional<LocalDate> getEndTime() {
         return Optional.ofNullable(endTime);
+    }
+
+    public Conflict toEntity() {
+        return Conflict.builder()
+                .id(docId)
+                .location(location)
+                .sideA(sideA)
+                .sideB(sideB)
+                .type(type)
+                .intensity(intensity)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
     }
 }
