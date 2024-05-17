@@ -8,12 +8,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//Tutaj dajemy eksport na xml i json jakis rzeczy
 @Service
 public class DataExportService {
 
     @Autowired
     private ConflictRepository conflictRepository;
-    public void saveConflictList(List<ConflictRowData> conflictRowDataList) {
-        conflictRepository.saveAll(conflictRowDataList.stream().map(ConflictRowData::toEntity).collect(Collectors.toList()));
-    }
+
 }

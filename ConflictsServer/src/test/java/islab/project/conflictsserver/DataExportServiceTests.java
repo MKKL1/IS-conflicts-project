@@ -18,13 +18,13 @@ public class DataExportServiceTests {
     @Autowired
     private DataImportService dataImportService;
     @Autowired
-    private DataExportService dataExportService;
+    private ConflictRepository conflictRepository;
 
     @Test
     public void save_test() throws IOException {
         ClassPathResource resource = new ClassPathResource("MainConflictTable.xls");
         InputStream inputStream = resource.getInputStream();
         List<ConflictRowData> result = dataImportService.importConflictData(inputStream);
-        dataExportService.saveConflictList(result);
+        conflictRepository.saveConflictList(result);
     }
 }
