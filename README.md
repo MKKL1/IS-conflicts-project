@@ -1,18 +1,13 @@
 ## Dane
 https://www.prio.org/data/23 - dosłownie to co robimy
+
 ### Surowce
 - giełda
-Gaz:
-- https://ourworldindata.org/grapher/natural-gas-prices
-Metale:
-- https://ourworldindata.org/grapher/real-commodity-price-index-metals
-Ropa:
-- https://ourworldindata.org/grapher/crude-oil-prices
-Złoto:
-- https://ourworldindata.org/grapher/price-per-kg-of-gold
-Węgiel:
-- https://ourworldindata.org/grapher/coal-prices
-
+- https://ourworldindata.org/grapher/natural-gas-prices - Gaz
+- https://ourworldindata.org/grapher/real-commodity-price-index-metals - Metale
+- https://ourworldindata.org/grapher/crude-oil-prices - Ropa
+- https://ourworldindata.org/grapher/price-per-kg-of-gold - Złoto
+- https://ourworldindata.org/grapher/coal-prices - Węgiel
 
 
 ### Konflikty
