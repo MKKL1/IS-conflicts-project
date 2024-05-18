@@ -2,8 +2,17 @@
 https://www.prio.org/data/23 - dosłownie to co robimy
 ### Surowce
 - giełda
-- https://www.spglobal.com/spdji/en/indices/equity/sp-global-natural-resources-index/#overview
+Gaz:
 - https://ourworldindata.org/grapher/natural-gas-prices
+Metale:
+- https://ourworldindata.org/grapher/real-commodity-price-index-metals
+Ropa:
+- https://ourworldindata.org/grapher/crude-oil-prices
+Złoto:
+- https://ourworldindata.org/grapher/price-per-kg-of-gold
+Węgiel:
+- https://ourworldindata.org/grapher/coal-prices
+
 
 
 ### Konflikty
