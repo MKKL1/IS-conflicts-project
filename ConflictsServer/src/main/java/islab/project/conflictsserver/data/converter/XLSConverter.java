@@ -1,4 +1,4 @@
-package islab.project.conflictsserver.data.excel;
+package islab.project.conflictsserver.data.converter;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public class XLSConverter {
 

@@ -1,4 +1,4 @@
-package islab.project.conflictsserver.data.excel;
+package islab.project.conflictsserver.data.converter;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
