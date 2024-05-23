@@ -1,6 +1,6 @@
-package islab.project.conflictsserver.data;
+package islab.project.conflictsserver.conflict.converter;
 
-import islab.project.conflictsserver.entity.Conflict;
+import islab.project.conflictsserver.conflict.Conflict;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

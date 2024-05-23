@@ -1,6 +1,6 @@
 package islab.project.conflictsserver;
 
-import islab.project.conflictsserver.data.ConflictRowData;
+import islab.project.conflictsserver.conflict.converter.ConflictRowData;
 import islab.project.conflictsserver.services.DataImportService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

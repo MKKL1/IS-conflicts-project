@@ -1,4 +1,4 @@
-package islab.project.conflictsserver.data.converter;
+package islab.project.conflictsserver.data;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;

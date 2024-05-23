@@ -1,8 +1,5 @@
-package islab.project.conflictsserver.controller;
+package islab.project.conflictsserver.conflict;
 
-import islab.project.conflictsserver.ConflictRepository;
-import islab.project.conflictsserver.entity.Conflict;
-import islab.project.conflictsserver.services.ConflictsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

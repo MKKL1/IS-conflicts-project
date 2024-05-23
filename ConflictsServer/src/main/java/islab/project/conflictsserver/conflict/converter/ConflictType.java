@@ -1,4 +1,4 @@
-package islab.project.conflictsserver.data;
+package islab.project.conflictsserver.conflict.converter;
 
 import java.util.Arrays;
 

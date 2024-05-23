@@ -1,7 +1,5 @@
-package islab.project.conflictsserver.services;
+package islab.project.conflictsserver.conflict;
 
-import islab.project.conflictsserver.ConflictRepository;
-import islab.project.conflictsserver.entity.Conflict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

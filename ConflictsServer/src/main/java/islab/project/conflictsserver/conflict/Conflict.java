@@ -1,7 +1,7 @@
-package islab.project.conflictsserver.entity;
+package islab.project.conflictsserver.conflict;
 
-import islab.project.conflictsserver.data.ConflictIntensity;
-import islab.project.conflictsserver.data.ConflictType;
+import islab.project.conflictsserver.conflict.converter.ConflictIntensity;
+import islab.project.conflictsserver.conflict.converter.ConflictType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

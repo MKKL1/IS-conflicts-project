@@ -1,18 +1,16 @@
 package islab.project.conflictsserver.services;
 
-import islab.project.conflictsserver.data.ConflictIntensity;
-import islab.project.conflictsserver.data.ConflictRowData;
-import islab.project.conflictsserver.data.ConflictType;
-import islab.project.conflictsserver.data.converter.CSVConverter;
-import islab.project.conflictsserver.data.converter.XLSConverter;
-import islab.project.conflictsserver.entity.ResourcesEntity;
+import islab.project.conflictsserver.conflict.converter.ConflictIntensity;
+import islab.project.conflictsserver.conflict.converter.ConflictRowData;
+import islab.project.conflictsserver.conflict.converter.ConflictType;
+import islab.project.conflictsserver.data.CSVConverter;
+import islab.project.conflictsserver.data.XLSConverter;
+import islab.project.conflictsserver.commodities.Commodity;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,10 +48,10 @@ public class DataImportService {
     }
 
     //Importing resources data from CSV
-    public List<ResourcesEntity> importResourcesData(InputStream inputStream, String resourceType) throws IOException {
+    public List<Commodity> importCommoditiesData(InputStream inputStream, String resourceType) throws IOException {
         return CSVConverter.convert(inputStream, row -> {
             Integer year = Integer.parseInt(row[2]);
-            return ResourcesEntity.builder()
+            return Commodity.builder()
                     .region(row[0])
                     .year(year)
                     .price(Double.parseDouble(row[3]))
@@ -62,10 +60,9 @@ public class DataImportService {
         }, true);
     }
 
-
     //Importing metal resources data from CSV
-    public List<ResourcesEntity> importMetalsData(InputStream inputStream) throws IOException {
-        List<ResourcesEntity> resources = new ArrayList<>();
+    public List<Commodity> importMetalsData(InputStream inputStream) throws IOException {
+        List<Commodity> resources = new ArrayList<>();
         CSVConverter.convert(inputStream, row -> {
             String region = row[0];
             Integer year = Integer.parseInt(row[2]);
@@ -73,7 +70,7 @@ public class DataImportService {
             String[] metals = {"Iron ore", "Bauxite", "Tin", "Zinc", "Steel", "Manganese", "Aluminum", "Chromium", "Copper", "Lead", "Nickel"};
             for (int i = 3; i < row.length; i++) {
                 if (!row[i].isEmpty()) {
-                    resources.add(ResourcesEntity.builder()
+                    resources.add(Commodity.builder()
                             .region(region)
                             .year(year)
                             .price(Double.parseDouble(row[i]))

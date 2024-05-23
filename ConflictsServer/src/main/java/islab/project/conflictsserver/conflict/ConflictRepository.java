@@ -1,7 +1,6 @@
-package islab.project.conflictsserver;
+package islab.project.conflictsserver.conflict;
 
-import islab.project.conflictsserver.data.ConflictRowData;
-import islab.project.conflictsserver.entity.Conflict;
+import islab.project.conflictsserver.conflict.converter.ConflictRowData;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
