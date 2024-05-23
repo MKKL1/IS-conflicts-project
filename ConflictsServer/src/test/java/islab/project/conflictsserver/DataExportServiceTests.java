@@ -39,6 +39,7 @@ public class DataExportServiceTests {
     @Test
     public void save_test_resources() throws IOException {
 
+        /*
         // Test for CrudeOilPricesData.csv
         ClassPathResource crudeOilResource = new ClassPathResource("CrudeOilPricesData.csv");
         InputStream crudeOilInputStream = crudeOilResource.getInputStream();
@@ -69,6 +70,13 @@ public class DataExportServiceTests {
         InputStream metalsInputStream = metalsResource.getInputStream();
         List<Commodity> metalsResult = dataImportService.importMetalsData(metalsInputStream);
         commoditiesRepository.saveAll(metalsResult);
+        */
+
+        // Test for CMO-Historical-Data-Monthly.xlsx
+        ClassPathResource cmoResources = new ClassPathResource("CMO-Historical-Data-Monthly.xlsx");
+        InputStream cmoInputStream = cmoResources.getInputStream();
+        List<Commodity> cmoResult = dataImportService.importCMOHistoricalData(cmoInputStream);
+        commoditiesRepository.saveAll(cmoResult);
 
     }
 }
