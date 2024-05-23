@@ -16,7 +16,7 @@ public class XLSXConverter {
     public static <T> List<T> convert(InputStream inputStream, Function<Row, T> rowFactory, int skiplines) throws IOException {
         List<T> rowList = new ArrayList<>();
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(1);
             Iterator<Row> rowIterator = sheet.iterator();
 
             // Skip the specified number of lines
