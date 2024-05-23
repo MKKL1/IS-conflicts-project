@@ -6,11 +6,13 @@ import islab.project.conflictsserver.conflict.converter.ConflictType;
 import islab.project.conflictsserver.data.CSVConverter;
 import islab.project.conflictsserver.data.XLSConverter;
 import islab.project.conflictsserver.commodities.Commodity;
+import islab.project.conflictsserver.data.XLSXConverter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,7 +55,7 @@ public class DataImportService {
             Integer year = Integer.parseInt(row[2]);
             return Commodity.builder()
                     .region(row[0])
-                    .year(year)
+                    .date(LocalDate.of(year, 1, 1)) //Mapping to first day of year
                     .price(Double.parseDouble(row[3]))
                     .type(resourceType)
                     .build();
@@ -72,7 +74,7 @@ public class DataImportService {
                 if (!row[i].isEmpty()) {
                     resources.add(Commodity.builder()
                             .region(region)
-                            .year(year)
+                            .date(LocalDate.of(year, 1, 1))
                             .price(Double.parseDouble(row[i]))
                             .type(metals[i - 3])
                             .build());
@@ -83,4 +85,10 @@ public class DataImportService {
         return resources;
     }
 
+    public List<Commodity> importCMOHistoricalData(InputStream inputStream) throws IOException {
+        return XLSXConverter.convert(inputStream, row -> {
+            System.out.println(row.toString());
+            return null;
+        }, 6);
+    }
 }

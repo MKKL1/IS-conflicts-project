@@ -29,4 +29,10 @@ public class DataImportServiceTests {
         assertNotNull(result);
         Assertions.assertEquals(CONFLICT_COUNT, result.size());
     }
+
+    public void test_valid_xlsx_file() throws IOException {
+        ClassPathResource resource = new ClassPathResource("CMO-Historical-Data-Monthly.xlsx");
+        InputStream inputStream = resource.getInputStream();
+        //TODO
+    }
 }

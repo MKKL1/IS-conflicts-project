@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "resources")
 @Data
@@ -20,6 +22,6 @@ public class Commodity {
     private String type;
     private Double price;
     private String region;
-    private Integer year;
+    private LocalDate date;
 
 }
