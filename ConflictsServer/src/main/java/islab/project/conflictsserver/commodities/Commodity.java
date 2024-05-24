@@ -21,6 +21,7 @@ public class Commodity {
 
     private String type;
     private Double price;
+    private String unit;
     private String region;
     private LocalDate date;
 

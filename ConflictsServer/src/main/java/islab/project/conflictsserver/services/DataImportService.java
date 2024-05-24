@@ -7,20 +7,29 @@ import islab.project.conflictsserver.data.CSVConverter;
 import islab.project.conflictsserver.data.XLSConverter;
 import islab.project.conflictsserver.commodities.Commodity;
 import islab.project.conflictsserver.data.XLSXConverter;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class DataImportService {
+
+    private final Map<Integer, CommodityMapValue> commodityKeyMap;
+
+    public DataImportService(Map<Integer, CommodityMapValue> commodityKeyMap) {
+        this.commodityKeyMap = commodityKeyMap;
+    }
 
     public List<ConflictRowData> importConflictData(InputStream inputStream) throws IOException {
         return filterConflictData(XLSConverter.convert(inputStream, row -> {
@@ -91,49 +100,6 @@ public class DataImportService {
 
     //import CMOHistorical resources Data from XLSX
     public List<Commodity> importCMOHistoricalData(InputStream inputStream) throws IOException {
-        class CommodityKey {
-            public String type;
-            public String region;
-
-            public CommodityKey(String type, String region) {
-                this.type = type;
-                this.region = region;
-            }
-        }
-
-        // Definition of types and regions
-        Map<Integer, CommodityKey> commodityKeyMap = new HashMap<>();
-        commodityKeyMap.put(1, new CommodityKey("Crude oil", "World"));
-        commodityKeyMap.put(2, new CommodityKey("Crude oil", "Brent"));
-        commodityKeyMap.put(3, new CommodityKey("Crude oil", "Dubai"));
-        commodityKeyMap.put(4, new CommodityKey("Crude oil", "WTI"));
-        commodityKeyMap.put(5, new CommodityKey("Coal", "Australian"));
-        commodityKeyMap.put(6, new CommodityKey("Coal", "South African"));
-        commodityKeyMap.put(7, new CommodityKey("Natural gas", "US"));
-        commodityKeyMap.put(8, new CommodityKey("Natural gas", "Europe"));
-        commodityKeyMap.put(9, new CommodityKey("Liquefied natural gas", "Japan"));
-        commodityKeyMap.put(11, new CommodityKey("Cocoa", "World"));
-        commodityKeyMap.put(18, new CommodityKey("Coconut oil", "World"));
-        commodityKeyMap.put(22, new CommodityKey("Palm oil", "World"));
-        commodityKeyMap.put(36, new CommodityKey("Wheat", "US SRW"));
-        commodityKeyMap.put(37, new CommodityKey("Wheat", "US HRW"));
-        commodityKeyMap.put(45, new CommodityKey("Sugar", "EU"));
-        commodityKeyMap.put(46, new CommodityKey("Sugar", "US"));
-        commodityKeyMap.put(47, new CommodityKey("Sugar", "World"));
-        commodityKeyMap.put(48, new CommodityKey("Tobacco", "US import u.v."));
-        commodityKeyMap.put(51, new CommodityKey("Sawnwood", "Cameroon"));
-        commodityKeyMap.put(52, new CommodityKey("Sawnwood", "Malaysian"));
-        commodityKeyMap.put(54, new CommodityKey("Cotton", "World"));
-        commodityKeyMap.put(62, new CommodityKey("Aluminum", "World"));
-        commodityKeyMap.put(63, new CommodityKey("Iron ore", "World"));
-        commodityKeyMap.put(64, new CommodityKey("Copper", "World"));
-        commodityKeyMap.put(65, new CommodityKey("Lead", "World"));
-        commodityKeyMap.put(66, new CommodityKey("Tin", "World"));
-        commodityKeyMap.put(67, new CommodityKey("Nickel", "World"));
-        commodityKeyMap.put(68, new CommodityKey("Zinc", "World"));
-        commodityKeyMap.put(69, new CommodityKey("Gold", "World"));
-        commodityKeyMap.put(70, new CommodityKey("Platinum", "World"));
-        commodityKeyMap.put(71, new CommodityKey("Silver", "World"));
 
         List<Commodity> commodities = new ArrayList<>();
 
@@ -146,19 +112,20 @@ public class DataImportService {
 
             LocalDate date = LocalDate.of(year, month, 1);
 
-            commodityKeyMap.forEach((columnIndex, commodityKey) -> {
+            commodityKeyMap.forEach((columnIndex, commodityMapValue) -> {
                 Cell cell = row.getCell(columnIndex);
                 if (cell != null && cell.getCellType() == CellType.NUMERIC) {
                     double price = cell.getNumericCellValue();
                     //log.info("Adding commodity: " + commodityKey.type + ", " + commodityKey.region + ", " + price + ", " + date); //check info
                     commodities.add(Commodity.builder()
-                            .region(commodityKey.region)
-                            .type(commodityKey.type)
+                            .region(commodityMapValue.region)
+                            .type(commodityMapValue.type)
                             .price(price)
+                            .unit(commodityMapValue.unit)
                             .date(date)
                             .build());
                 } else {
-                    log.info("Skipping cell for " + commodityKey.type + " due to missing or non-numeric value");
+                    log.info("Skipping cell for " + commodityMapValue.type + " due to missing or non-numeric value");
                 }
             });
             return null; // Returning null because we're adding commodities directly to the list
@@ -166,5 +133,10 @@ public class DataImportService {
         return commodities;
     }
 
-
+    @AllArgsConstructor
+    public static class CommodityMapValue {
+        String type;
+        String region;
+        String unit;
+    }
 }
