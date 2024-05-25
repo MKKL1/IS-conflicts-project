@@ -1,5 +1,6 @@
 package islab.project.conflictsserver.commodities;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,12 @@ public class CommoditiesService {
     public List<Commodity> findAll() {
         return StreamSupport.stream(commoditiesRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
+    }
+
+    public List<CommodityPriceDTO> findValuesByCategory(CommodityCategory commodityCategory) {
+        List<CommodityPriceDTO> commodityPriceDTOList = commoditiesRepository.findCommodityPriceByCategory(commodityCategory);
+        if(commodityPriceDTOList.isEmpty()) throw new CommodityNotFoundException("Commodity with values " + commodityCategory.toString() + " not found.");
+        return commodityPriceDTOList;
     }
 
 }

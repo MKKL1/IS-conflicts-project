@@ -1,6 +1,7 @@
 package islab.project.conflictsserver.conflict;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,10 @@ public class ConflictsController {
     @GetMapping()
     public List<Conflict> all() {
         return conflictsService.all();
+    }
+
+    @GetMapping("/{id}")
+    public ConflictDTO find(@PathVariable() Integer id) {
+        return conflictsService.find(id);
     }
 }

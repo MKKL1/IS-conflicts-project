@@ -1,8 +1,9 @@
 package islab.project.conflictsserver.commodities;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,7 +17,9 @@ public class CommoditiesController {
     }
 
     @GetMapping()
-    public List<Commodity> findAll() {
-        return commoditiesService.findAll();
+    public List<CommodityPriceDTO> findValuesByCategory(@RequestParam(name = "type") String type,
+                                                                        @RequestParam(name = "region") String region,
+                                                                        @RequestParam(name = "unit") String unit) {
+        return commoditiesService.findValuesByCategory(new CommodityCategory(type, region, unit));
     }
 }
