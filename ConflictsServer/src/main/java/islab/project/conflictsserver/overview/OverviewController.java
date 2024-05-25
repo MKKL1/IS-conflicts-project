@@ -1,4 +1,4 @@
-package islab.project.conflictsserver.meta;
+package islab.project.conflictsserver.overview;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
