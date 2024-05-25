@@ -1,5 +1,6 @@
 package islab.project.conflictsserver.services;
 
+import islab.project.conflictsserver.config.DataImportConfig;
 import islab.project.conflictsserver.conflict.converter.ConflictIntensity;
 import islab.project.conflictsserver.conflict.converter.ConflictRowData;
 import islab.project.conflictsserver.conflict.converter.ConflictType;
@@ -25,9 +26,9 @@ import java.util.stream.Collectors;
 @Service
 public class DataImportService {
 
-    private final Map<Integer, CommodityMapValue> commodityKeyMap;
+    private final Map<Integer, DataImportConfig.CommodityMapValue> commodityKeyMap;
 
-    public DataImportService(Map<Integer, CommodityMapValue> commodityKeyMap) {
+    public DataImportService(Map<Integer, DataImportConfig.CommodityMapValue> commodityKeyMap) {
         this.commodityKeyMap = commodityKeyMap;
     }
 
@@ -118,25 +119,17 @@ public class DataImportService {
                     double price = cell.getNumericCellValue();
                     //log.info("Adding commodity: " + commodityKey.type + ", " + commodityKey.region + ", " + price + ", " + date); //check info
                     commodities.add(Commodity.builder()
-                            .region(commodityMapValue.region)
-                            .type(commodityMapValue.type)
+                            .region(commodityMapValue.getRegion())
+                            .type(commodityMapValue.getType())
                             .price(price)
-                            .unit(commodityMapValue.unit)
+                            .unit(commodityMapValue.getUnit())
                             .date(date)
                             .build());
                 } else {
-                    log.info("Skipping cell for " + commodityMapValue.type + " due to missing or non-numeric value");
+                    log.debug("Skipping cell for " + commodityMapValue.getType() + " due to missing or non-numeric value");
                 }
             });
-            return null; // Returning null because we're adding commodities directly to the list
         }, 6);
         return commodities;
-    }
-
-    @AllArgsConstructor
-    public static class CommodityMapValue {
-        String type;
-        String region;
-        String unit;
     }
 }
