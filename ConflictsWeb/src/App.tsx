@@ -33,7 +33,7 @@ function App() {
                   </AuthGuard>}/>
               </Routes>
           </BrowserRouter>
-          {/*<Notification message={message} variant={variant}/>*/}
+          <Notification message={message} variant={variant}/>
       </div>
   )
 }
