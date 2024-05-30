@@ -1,16 +1,14 @@
 import {
     ChartsAxisHighlight,
-    ChartsLegend, ChartsTooltip,
+    ChartsLegend, ChartsReferenceLine, ChartsTooltip,
     ChartsXAxis,
     ChartsYAxis,
     LineHighlightPlot,
     LinePlot,
     ResponsiveChartContainer
 } from "@mui/x-charts";
-import {Paper, Slider} from "@mui/material";
-import {useEffect, useRef, useState} from "react";
-import dayjs, { Dayjs } from 'dayjs';
-import DateRangePicker from "./DateRangePicker.tsx";
+import {Paper} from "@mui/material";
+import { Dayjs } from 'dayjs';
 
 const chartSetting = {
     yAxis: [
@@ -20,17 +18,16 @@ const chartSetting = {
     ]
 };
 
-export default function ChartComponent({dataset}: {dataset: any[]}) {
-    const [range, setRange] = useState<Dayjs[]>();
-    const [initialRange, setInitialRange] = useState<Dayjs[]>();
+export default function ChartComponent({dataset, range, conflictRange}: {dataset: any[], range: Dayjs[] | undefined, conflictRange: Dayjs[] | undefined}) {
+    // const [initialRange, setInitialRange] = useState<Dayjs[]>();
 
-    useEffect(() => {
-        const dates = dataset.map(item => item.date);
-        const smallestDate = dayjs(new Date(Math.min(...dates)));
-        const largestDate = dayjs(new Date(Math.max(...dates)));
-        setInitialRange([smallestDate, largestDate]);
-        setRange(initialRange);
-    }, [dataset]);
+    // useEffect(() => {
+    //     const dates = dataset.map(item => item.date);
+    //     const smallestDate = dayjs(new Date(Math.min(...dates)));
+    //     const largestDate = dayjs(new Date(Math.max(...dates)));
+    //     setInitialRange([smallestDate, largestDate]);
+    //     setRange(initialRange);
+    // }, [dataset]);
 
     return (
         range &&
@@ -62,23 +59,27 @@ export default function ChartComponent({dataset}: {dataset: any[]}) {
                 <LinePlot />
                 <ChartsXAxis />
                 <ChartsYAxis />
-                {/*<MarkPlot />*/}
+                {
+                    conflictRange &&
+                    <>
+                        <ChartsReferenceLine
+                            x={conflictRange[0].toDate()}
+                            label="Start"
+                            lineStyle={{ stroke: 'red' }}
+                        />
+                        <ChartsReferenceLine
+                            x={conflictRange[1].toDate()}
+                            label="End"
+                            lineStyle={{ stroke: 'red' }}
+                        />
+                    </>
+                }
                 <ChartsLegend />
                 <LineHighlightPlot/>
                 <ChartsAxisHighlight x="line" />
                 <ChartsTooltip trigger="axis" />
                 <ChartsXAxis label="Data" position="bottom" axisId="x-axis-id" />
             </ResponsiveChartContainer>
-
-            {
-                initialRange &&
-                <DateRangePicker
-                    initialRange={initialRange}
-                    onChange={(newValue) => {
-                        setRange(newValue);
-                    }}
-                />
-            }
 
         </Paper>
     );

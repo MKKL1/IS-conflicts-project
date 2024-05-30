@@ -1,30 +1,37 @@
 import {MenuItem, TextField} from "@mui/material";
 import {Button, Stack} from "react-bootstrap";
 import {useEffect, useState} from "react";
-import {CommodityCategory} from "../models/CommodityCategory.ts";
 import ChartComponent from "./ChartComponent.tsx";
 import axios from "axios";
 import {OverviewResponse} from "../models/OverviewResponse.ts";
 import {useNotificationContext} from "../contexts/NotificationContext.tsx";
 import {NotificationVariants} from "../NotificationVariants.ts";
-import {Conflict} from "../models/Conflict.ts";
+import dayjs, {Dayjs} from "dayjs";
+import DateRangePicker from "./DateRangePicker.tsx";
 
 export default function ChartPage() {
     const {pushNotification} = useNotificationContext();
 
     const [overviewData, setOverviewData] = useState<OverviewResponse>();
-    const [commodity, setCommodity] = useState<CommodityCategory | undefined>(undefined);
-    const [conflict, setConflict] = useState<Conflict | undefined>(undefined);
+    const [commodityIndex, setCommodityIndex] = useState<number>(0);
+    const [conflictIndex, setConflictIndex] = useState<number>(0);
     const [dataset, setDataset] = useState([]);
+    const [range, setRange] = useState<Dayjs[]>();
+    const [conflictRange, setconflictRange] = useState<Dayjs[]>();
+
+    function getCommodity(index: number) {
+        return overviewData?.commodities[index];
+    }
+
+    function getConflict(index: number) {
+        return overviewData?.conflicts[index];
+    }
 
     useEffect(() => {
         axios.get('http://localhost:8080/api/overview')
             .then(res => {
                 console.log(res.data);
                 setOverviewData(res.data);
-
-                setCommodity(overviewData?.commodities[0])
-                setConflict(overviewData?.conflicts[0])
             })
             .catch(err => {
                 console.error(err);
@@ -32,7 +39,16 @@ export default function ChartPage() {
             });
     }, [pushNotification]);
 
+    useEffect(() => {
+        const conflict = getConflict(conflictIndex);
+        if(conflict) {
+            setRange([dayjs(conflict.start).add(-2, 'month'), dayjs(conflict.end).add(2, 'month')])
+            setconflictRange([dayjs(conflict.start), dayjs(conflict.end)])
+        }
+    }, [conflictIndex]);
+
     function updateChart() {
+        const commodity = getCommodity(commodityIndex);
         axios.get(`http://localhost:8080/api/commodities?type=${commodity?.type}&region=${commodity?.region}&unit=${commodity?.unit}`)
             .then(res => {
                 console.log(res.data);
@@ -54,12 +70,12 @@ export default function ChartPage() {
                 <TextField
                     select
                     sx={{ minWidth: 150 }}
-                    label="x-axis colorMap"
-                    value={0}
+                    label="commodity"
+                    value={getCommodity(commodityIndex)}
                     onChange={(event) => {
                         console.log(event.target.value)
-                        setCommodity(overviewData?.commodities[Number(event.target.value)])
-                        console.log(commodity)
+                        setCommodityIndex(Number(event.target.value))
+                        updateChart()
                     }}
                 >
                     {overviewData?.commodities.map((commodity, index) => (
@@ -69,23 +85,29 @@ export default function ChartPage() {
                 <TextField
                     select
                     sx={{ minWidth: 150 }}
-                    label="x-axis colorMap"
-                    value={0}
+                    label="conflict"
+                    value={getConflict(conflictIndex)}
                     onChange={(event) => {
                         console.log(event.target.value)
-                        setConflict(overviewData?.conflicts[Number(event.target.value)])
-                        console.log(conflict)
+                        setConflictIndex(Number(event.target.value));
                     }}
                 >
                     {overviewData?.conflicts.map((conflict, index) => (
-                        <MenuItem key={index} value={index}>{conflict.location} - {conflict.start}</MenuItem>
+                        <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>
                     ))}
                 </TextField>
-                <Button onClick={updateChart}>
-                    Update
-                </Button>
+                {/*<Button onClick={updateChart}>*/}
+                {/*    Update*/}
+                {/*</Button>*/}
             </Stack>
-            <ChartComponent dataset={dataset}/>
+            <ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>
+            <DateRangePicker
+                value={range}
+                onChange={(newValue) => {
+                    console.log(newValue);
+                    setRange(newValue);
+                }}
+            />
         </Stack>
     )
 }
