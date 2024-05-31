@@ -1,34 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import './App.css'
+import NavigationBar from "./components/NavigationBar.tsx";
+import Notification from "./components/Notification.tsx";
+import GuestGuard from "./guards/GuestGuard.tsx";
+import AdminGuard from "./guards/AdminGuard.tsx";
+import AuthGuard from "./guards/AuthGuard.tsx";
+import Register from "./components/Register.tsx";
+import Login from "./components/Login.tsx";
+import HomePage from "./components/HomePage.tsx";
+import {useNotificationContext} from "./contexts/NotificationContext.tsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+    const {message, variant} = useNotificationContext();
   return (
-    <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+          <BrowserRouter>
+              <NavigationBar/>
+              <Routes>
+                  <Route path='/' Component={HomePage}/>
+                  <Route path='/login' element={<GuestGuard>
+                      <Login/>
+                  </GuestGuard>}/>
+                  <Route path='/register' element={<GuestGuard>
+                      <Register/>
+                  </GuestGuard>}/>
+                  <Route path='/add' element={<AdminGuard>
+                      <></>
+                  </AdminGuard>}/>
+                  <Route path='/profile' element={<AuthGuard>
+                      {/*<Profile/>*/}
+                      <></>
+                  </AuthGuard>}/>
+              </Routes>
+          </BrowserRouter>
+          <Notification message={message} variant={variant}/>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
   )
 }
 
