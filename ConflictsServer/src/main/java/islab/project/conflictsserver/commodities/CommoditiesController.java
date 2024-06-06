@@ -1,5 +1,6 @@
 package islab.project.conflictsserver.commodities;
 
+import islab.project.conflictsserver.conflict.ConflictDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,8 @@ public class CommoditiesController {
         this.commoditiesService = commoditiesService;
     }
 
-    @GetMapping()
-    public List<CommodityPriceDTO> findValuesByCategory(@RequestParam(name = "type") String type,
-                                                                        @RequestParam(name = "region") String region,
-                                                                        @RequestParam(name = "unit") String unit) {
-        return commoditiesService.findValuesByCategory(new CommodityCategory(type, region, unit));
+    @GetMapping("/{id}")
+    public List<CommodityPriceDTO> findValuesByCategory(@PathVariable() Integer id) {
+        return commoditiesService.findValuesByCategory(id);
     }
 }
