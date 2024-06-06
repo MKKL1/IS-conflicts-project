@@ -2,9 +2,9 @@ export class Conflict {
     id: number;
     location: string;
     start: string;
-    end: string;
+    end: string|undefined;
 
-    constructor(id: number, location: string, start: string, end: string) {
+    constructor(id: number, location: string, start: string, end: string|undefined) {
         this.id = id;
         this.location = location;
         this.start = start;
