@@ -14,15 +14,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Commodity {
+public class CommodityPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String type;
+    @ManyToOne
+    @JoinColumn(name="category_id", nullable = false)
+    private CommodityCategory commodityCategory;
+
     private Double price;
-    private String unit;
-    private String region;
     private LocalDate date;
 
 }

@@ -42,14 +42,15 @@ export default function ChartPage() {
     useEffect(() => {
         const conflict = getConflict(conflictIndex);
         if(conflict) {
-            setRange([dayjs(conflict.start).add(-2, 'month'), dayjs(conflict.end).add(2, 'month')])
+            const enddate = conflict.end ? dayjs(conflict.end) : dayjs()
+            setRange([dayjs(conflict.start).add(-2, 'month'), enddate.add(2, 'month')])
             setconflictRange([dayjs(conflict.start), dayjs(conflict.end)])
         }
     }, [conflictIndex]);
 
     function updateChart() {
         const commodity = getCommodity(commodityIndex);
-        axios.get(`http://localhost:8080/api/commodities?type=${commodity?.type}&region=${commodity?.region}&unit=${commodity?.unit}`)
+        axios.get(`http://localhost:8080/api/commodities/${commodity?.id}`)
             .then(res => {
                 console.log(res.data);
                 const formattedResponse = res.data.map((item: {date: string; price: number;}) => ({

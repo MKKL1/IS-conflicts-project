@@ -1,25 +1,23 @@
 package islab.project.conflictsserver.services;
 
+import islab.project.conflictsserver.commodities.CommodityCategory;
+import islab.project.conflictsserver.commodities.CommodityCategoryRepository;
 import islab.project.conflictsserver.config.DataImportConfig;
 import islab.project.conflictsserver.conflict.converter.ConflictIntensity;
 import islab.project.conflictsserver.conflict.converter.ConflictRowData;
 import islab.project.conflictsserver.conflict.converter.ConflictType;
 import islab.project.conflictsserver.data.CSVConverter;
 import islab.project.conflictsserver.data.XLSConverter;
-import islab.project.conflictsserver.commodities.Commodity;
+import islab.project.conflictsserver.commodities.CommodityPrice;
 import islab.project.conflictsserver.data.XLSXConverter;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,46 +61,46 @@ public class DataImportService {
     }
 
     //Importing resources data from CSV
-    public List<Commodity> importCommoditiesData(InputStream inputStream, String resourceType) throws IOException {
-        return CSVConverter.convert(inputStream, row -> {
-            Integer year = Integer.parseInt(row[2]);
-            return Commodity.builder()
-                    .region(row[0])
-                    .date(LocalDate.of(year, 1, 1)) //Mapping to first day of year
-                    .price(Double.parseDouble(row[3]))
-                    .type(resourceType)
-                    .build();
-        }, true);
-    }
+//    public List<CommodityPrice> importCommoditiesData(InputStream inputStream, String resourceType) throws IOException {
+//        return CSVConverter.convert(inputStream, row -> {
+//            Integer year = Integer.parseInt(row[2]);
+//            return CommodityPrice.builder()
+//                    .region(row[0])
+//                    .date(LocalDate.of(year, 1, 1)) //Mapping to first day of year
+//                    .price(Double.parseDouble(row[3]))
+//                    .type(resourceType)
+//                    .build();
+//        }, true);
+//    }
 
     //Importing metal resources data from CSV
-    public List<Commodity> importMetalsData(InputStream inputStream) throws IOException {
-        List<Commodity> resources = new ArrayList<>();
-        CSVConverter.convert(inputStream, row -> {
-            String region = row[0];
-            Integer year = Integer.parseInt(row[2]);
-
-            String[] metals = {"Iron ore", "Bauxite", "Tin", "Zinc", "Steel", "Manganese", "Aluminum", "Chromium", "Copper", "Lead", "Nickel"};
-            for (int i = 3; i < row.length; i++) {
-                if (!row[i].isEmpty()) {
-                    resources.add(Commodity.builder()
-                            .region(region)
-                            .date(LocalDate.of(year, 1, 1))
-                            .price(Double.parseDouble(row[i]))
-                            .type(metals[i - 3])
-                            .build());
-                }
-            }
-            return null;
-        }, true);
-        return resources;
-    }
+//    public List<CommodityPrice> importMetalsData(InputStream inputStream) throws IOException {
+//        List<CommodityPrice> resources = new ArrayList<>();
+//        CSVConverter.convert(inputStream, row -> {
+//            String region = row[0];
+//            Integer year = Integer.parseInt(row[2]);
+//
+//            String[] metals = {"Iron ore", "Bauxite", "Tin", "Zinc", "Steel", "Manganese", "Aluminum", "Chromium", "Copper", "Lead", "Nickel"};
+//            for (int i = 3; i < row.length; i++) {
+//                if (!row[i].isEmpty()) {
+//                    resources.add(CommodityPrice.builder()
+//                            .region(region)
+//                            .date(LocalDate.of(year, 1, 1))
+//                            .price(Double.parseDouble(row[i]))
+//                            .type(metals[i - 3])
+//                            .build());
+//                }
+//            }
+//            return null;
+//        }, true);
+//        return resources;
+//    }
 
 
     //import CMOHistorical resources Data from XLSX
-    public List<Commodity> importCMOHistoricalData(InputStream inputStream) throws IOException {
+    public Map<CommodityCategory, List<CommodityPrice>> importCMOHistoricalData(InputStream inputStream) throws IOException {
 
-        List<Commodity> commodities = new ArrayList<>();
+        Map<CommodityCategory, List<CommodityPrice>> categoryPriceMap = new HashMap<>();
 
         XLSXConverter.convert(inputStream, row -> {
             // Fixing date
@@ -117,19 +115,22 @@ public class DataImportService {
                 Cell cell = row.getCell(columnIndex);
                 if (cell != null && cell.getCellType() == CellType.NUMERIC) {
                     double price = cell.getNumericCellValue();
-                    //log.info("Adding commodity: " + commodityKey.type + ", " + commodityKey.region + ", " + price + ", " + date); //check info
-                    commodities.add(Commodity.builder()
-                            .region(commodityMapValue.getRegion())
+                    CommodityCategory commodityCategory = CommodityCategory.builder()
                             .type(commodityMapValue.getType())
-                            .price(price)
+                            .region(commodityMapValue.getRegion())
                             .unit(commodityMapValue.getUnit())
+                            .build();
+                    List<CommodityPrice> priceList = categoryPriceMap.getOrDefault(commodityCategory, new ArrayList<>());
+                    priceList.add(CommodityPrice.builder()
+                            .price(price)
                             .date(date)
                             .build());
+                    categoryPriceMap.put(commodityCategory, priceList);
                 } else {
                     log.debug("Skipping cell for " + commodityMapValue.getType() + " due to missing or non-numeric value");
                 }
             });
         }, 6);
-        return commodities;
+        return categoryPriceMap;
     }
 }
