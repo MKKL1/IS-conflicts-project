@@ -74,27 +74,40 @@ public class DataImportService {
 //    }
 
     //Importing metal resources data from CSV
-//    public List<CommodityPrice> importMetalsData(InputStream inputStream) throws IOException {
-//        List<CommodityPrice> resources = new ArrayList<>();
-//        CSVConverter.convert(inputStream, row -> {
-//            String region = row[0];
-//            Integer year = Integer.parseInt(row[2]);
-//
-//            String[] metals = {"Iron ore", "Bauxite", "Tin", "Zinc", "Steel", "Manganese", "Aluminum", "Chromium", "Copper", "Lead", "Nickel"};
-//            for (int i = 3; i < row.length; i++) {
-//                if (!row[i].isEmpty()) {
+    public Map<CommodityCategory, List<CommodityPrice>> importMetalsData(InputStream inputStream) throws IOException {
+        Map<CommodityCategory, List<CommodityPrice>> categoryPriceMap = new HashMap<>();
+
+        CSVConverter.convert(inputStream, row -> {
+            String region = row[0];
+            Integer year = Integer.parseInt(row[2]);
+
+            String[] metals = {"Iron ore", "Bauxite", "Tin", "Zinc", "Steel", "Manganese", "Aluminum", "Chromium", "Copper", "Lead", "Nickel"};
+            for (int i = 3; i < row.length; i++) {
+                if (!row[i].isEmpty()) {
 //                    resources.add(CommodityPrice.builder()
 //                            .region(region)
 //                            .date(LocalDate.of(year, 1, 1))
 //                            .price(Double.parseDouble(row[i]))
-//                            .type(metals[i - 3])
+//                            .type)
 //                            .build());
-//                }
-//            }
-//            return null;
-//        }, true);
-//        return resources;
-//    }
+
+                    CommodityCategory commodityCategory = CommodityCategory.builder()
+                            .type(metals[i - 3])
+                            .region(region)
+                            .unit("1900=100")
+                            .build();
+                    List<CommodityPrice> priceList = categoryPriceMap.getOrDefault(commodityCategory, new ArrayList<>());
+                    priceList.add(CommodityPrice.builder()
+                            .price(Double.parseDouble(row[i]))
+                            .date(LocalDate.of(year, 1, 1))
+                            .build());
+                    categoryPriceMap.put(commodityCategory, priceList);
+                }
+            }
+            return null;
+        }, true);
+        return categoryPriceMap;
+    }
 
 
     //import CMOHistorical resources Data from XLSX

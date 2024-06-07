@@ -19,9 +19,6 @@ export default function Register(){
         username: Yup.string()
             .min(6, 'Username must have at least 6 characters')
             .required("Username is required"),
-        email: Yup.string()
-            .email("Invalid email")
-            .required("Email is required"),
         password: Yup.string()
             .required("Password is required"),
         passwordConfirm: Yup.string()
@@ -38,7 +35,8 @@ export default function Register(){
             password: values.password
         })
         .then(res => {
-            const accessToken = res.data.access_token;
+            console.log(res.data)
+            const accessToken = res.data.token;
             updateToken(accessToken);
             setSubmitting(false);
             pushNotification("Succesfully created account!", NotificationVariants.success);
@@ -61,7 +59,7 @@ export default function Register(){
                 <Card style={{ width: '50rem', height: '80%'}}>
                     <Card.Body style={{display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                         <Card.Title className="text-center">Create new account</Card.Title>
-                        <Formik initialValues={{username: '',email: '', password: '', passwordConfirm: ''}}
+                        <Formik initialValues={{username: '', password: '', passwordConfirm: ''}}
                                 onSubmit={(values: RegistrationRequest, {setSubmitting}) => submitRegistration(values, setSubmitting)}
                                 validationSchema={registrationSchema}>
                             {({errors, isSubmitting, isValid, dirty, handleSubmit, handleChange, handleBlur, touched}) => (
