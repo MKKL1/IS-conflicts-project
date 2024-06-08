@@ -14,7 +14,6 @@ export default function Register(){
     const {pushNotification} = useNotificationContext();
     const navigate = useNavigate();
 
-    // TODO check if password are identical
     const registrationSchema = object({
         username: Yup.string()
             .min(6, 'Username must have at least 6 characters')
@@ -29,28 +28,25 @@ export default function Register(){
     function submitRegistration(values: RegistrationRequest, setSubmitting: (isSubmitting: boolean) => void){
         console.log(values);
 
-        // TODO Show toast with info
         axios.post("http://localhost:8080/api/auth/register", {
             username: values.username,
             password: values.password
         })
-        .then(res => {
-            console.log(res.data)
-            const accessToken = res.data.token;
-            updateToken(accessToken);
-            setSubmitting(false);
-            pushNotification("Succesfully created account!", NotificationVariants.success);
-            navigate('/recipes');
-        })
-        .catch(err => {
-            console.error(err);
-            setSubmitting(false);
-            // check why error occurs
-            const message = err.response?.status === 400 ?
-                'User with this username or email already exist' : 'Error during sign up';
+            .then(res => {
+                const accessToken = res.data.access_token;
+                updateToken(accessToken);
+                setSubmitting(false);
+                pushNotification("Succesfully created account!", NotificationVariants.success);
+                navigate('/');
+            })
+            .catch(err => {
+                console.error(err);
+                setSubmitting(false);
+                const message = err.response?.status === 400 ?
+                    'User with this username already exists' : 'Error during sign up';
 
-            pushNotification(message, NotificationVariants.danger);
-        });
+                pushNotification(message, NotificationVariants.danger);
+            });
     }
 
     return (
@@ -76,10 +72,9 @@ export default function Register(){
                                     </FormGroup>
                                     <FormGroup controlId="passwordConfirm" className="mb-2">
                                         <Form.Label>Confirm password</Form.Label>
-                                        <Form.Control type="passwordConfirm" name="passwordConfirm" placeholder="Confirm your password" onChange={handleChange} onBlur={handleBlur}/>
+                                        <Form.Control type="password" name="passwordConfirm" placeholder="Confirm your password" onChange={handleChange} onBlur={handleBlur}/>
                                         {touched.passwordConfirm && errors.passwordConfirm && <Alert style={{marginTop: '4px'}} variant="danger">{errors.passwordConfirm}</Alert>}
                                     </FormGroup>
-                                    {/* change button after submitting */}
                                     { isSubmitting ?
                                         <Button variant="primary" disabled>
                                             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> Loading...

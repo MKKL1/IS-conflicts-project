@@ -31,7 +31,7 @@ export default function Login(){
                 updateToken(accessToken);
                 setSubmitting(false);
                 pushNotification("Succesfully logged in", NotificationVariants.info);
-                navigate('/recipes');
+                navigate('/');
             })
             .catch(err => {
                 setSubmitting(false);
