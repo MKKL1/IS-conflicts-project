@@ -27,7 +27,7 @@ export default function Login(){
         // send request to backend
         axios.post("http://localhost:8080/api/auth/login", values)
             .then(res => {
-                const accessToken = res.data.access_token;
+                const accessToken = res.data.token;
                 updateToken(accessToken);
                 setSubmitting(false);
                 pushNotification("Succesfully logged in", NotificationVariants.info);
