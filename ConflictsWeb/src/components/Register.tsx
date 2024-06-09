@@ -33,7 +33,7 @@ export default function Register(){
             password: values.password
         })
             .then(res => {
-                const accessToken = res.data.access_token;
+                const accessToken = res.data.token;
                 updateToken(accessToken);
                 setSubmitting(false);
                 pushNotification("Succesfully created account!", NotificationVariants.success);
