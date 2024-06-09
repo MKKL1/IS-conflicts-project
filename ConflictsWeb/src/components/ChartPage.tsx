@@ -95,35 +95,35 @@ export default function ChartPage() {
             </Box>
 
             <ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>
-            {/*<Box display="flex" gap={3} mb={2}>*/}
-            {/*    <TextField*/}
-            {/*        select*/}
-            {/*        sx={{ minWidth: 150 }}*/}
-            {/*        label="commodity"*/}
-            {/*        value={commodityIndex}*/}
-            {/*        onChange={(event) => {*/}
-            {/*            setCommodityIndex(Number(event.target.value));*/}
-            {/*            updateChart();*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        {overviewData?.commodities.map((commodity, index) => (*/}
-            {/*            <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>*/}
-            {/*        ))}*/}
-            {/*    </TextField>*/}
-            {/*    <TextField*/}
-            {/*        select*/}
-            {/*        sx={{ minWidth: 150 }}*/}
-            {/*        label="conflict"*/}
-            {/*        value={conflictIndex}*/}
-            {/*        onChange={(event) => {*/}
-            {/*            setConflictIndex(Number(event.target.value));*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        {overviewData?.conflicts.map((conflict, index) => (*/}
-            {/*            <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>*/}
-            {/*        ))}*/}
-            {/*    </TextField>*/}
-            {/*</Box>*/}
+            <Box display="flex" gap={3} mb={2}>
+                <TextField
+                    select
+                    sx={{ minWidth: 150 }}
+                    label="commodity"
+                    value={commodityIndex}
+                    onChange={(event) => {
+                        setCommodityIndex(Number(event.target.value));
+                        updateChart();
+                    }}
+                >
+                    {overviewData?.commodities.map((commodity, index) => (
+                        <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>
+                    ))}
+                </TextField>
+                {/*<TextField*/}
+                {/*    select*/}
+                {/*    sx={{ minWidth: 150 }}*/}
+                {/*    label="conflict"*/}
+                {/*    value={conflictIndex}*/}
+                {/*    onChange={(event) => {*/}
+                {/*        setConflictIndex(Number(event.target.value));*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    {overviewData?.conflicts.map((conflict, index) => (*/}
+                {/*        <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>*/}
+                {/*    ))}*/}
+                {/*</TextField>*/}
+            </Box>
             {/*<ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>*/}
             <DateRangePicker
                 value={range}

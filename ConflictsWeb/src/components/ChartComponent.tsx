@@ -20,7 +20,7 @@ export default function ChartComponent({dataset, range, conflictRange}: {dataset
 
     useEffect(() => {
         if(dataset) {
-            setCandleStickData(convertToCandlestickData(dataset));
+            setCandleStickData(convertToCandlestickData(dataset, 12));
         }
     }, [dataset]);
 
