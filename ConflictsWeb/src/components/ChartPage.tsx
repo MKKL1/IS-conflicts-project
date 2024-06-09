@@ -8,6 +8,8 @@ import {NotificationVariants} from "../NotificationVariants.ts";
 import dayjs, {Dayjs} from "dayjs";
 import DateRangePicker from "./DateRangePicker.tsx";
 import { exportDataAsJSON, exportDataAsXML } from "../utils/dataExport.ts";
+import ConflictTable from "./ConflictTable.tsx";
+import {DatePrice} from "../models/DatePrice.ts";
 
 export default function ChartPage() {
     const {pushNotification} = useNotificationContext();
@@ -39,14 +41,14 @@ export default function ChartPage() {
             });
     }, [pushNotification]);
 
-    useEffect(() => {
-        const conflict = getConflict(conflictIndex);
-        if(conflict) {
-            const enddate = conflict.end ? dayjs(conflict.end) : dayjs();
-            setRange([dayjs(conflict.start).add(-2, 'month'), enddate.add(2, 'month')]);
-            setconflictRange([dayjs(conflict.start), dayjs(conflict.end)]);
-        }
-    }, [conflictIndex]);
+    // useEffect(() => {
+    //     const conflict = getConflict(conflictIndex);
+    //     if(conflict) {
+    //         const enddate = conflict.end ? dayjs(conflict.end) : dayjs();
+    //         setRange([dayjs(conflict.start).add(-2, 'month'), enddate.add(2, 'month')]);
+    //         setconflictRange([dayjs(conflict.start), dayjs(conflict.end)]);
+    //     }
+    // }, [conflictIndex]);
 
     function updateChart() {
         const commodity = getCommodity(commodityIndex);
@@ -54,7 +56,7 @@ export default function ChartPage() {
             axios.get(`http://localhost:8080/api/commodities/${commodity?.id}`)
                 .then(res => {
                     console.log(res.data);
-                    const formattedResponse = res.data.map((item: {date: string; price: number;}) => ({
+                    const formattedResponse = res.data.map((item: DatePrice) => ({
                         ...item,
                         date: new Date(item.date)
                     }));
@@ -85,35 +87,44 @@ export default function ChartPage() {
     return (
         <Box>
             <Box display="flex" gap={3} mb={2}>
-                <TextField
-                    select
-                    sx={{ minWidth: 150 }}
-                    label="commodity"
-                    value={commodityIndex}
-                    onChange={(event) => {
-                        setCommodityIndex(Number(event.target.value));
-                        updateChart();
-                    }}
-                >
-                    {overviewData?.commodities.map((commodity, index) => (
-                        <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    select
-                    sx={{ minWidth: 150 }}
-                    label="conflict"
-                    value={conflictIndex}
-                    onChange={(event) => {
-                        setConflictIndex(Number(event.target.value));
-                    }}
-                >
-                    {overviewData?.conflicts.map((conflict, index) => (
-                        <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>
-                    ))}
-                </TextField>
+                { overviewData?.commodities &&
+                    <ConflictTable
+                        rows={overviewData?.conflicts}>
+                    </ConflictTable>
+                }
             </Box>
+
             <ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>
+            {/*<Box display="flex" gap={3} mb={2}>*/}
+            {/*    <TextField*/}
+            {/*        select*/}
+            {/*        sx={{ minWidth: 150 }}*/}
+            {/*        label="commodity"*/}
+            {/*        value={commodityIndex}*/}
+            {/*        onChange={(event) => {*/}
+            {/*            setCommodityIndex(Number(event.target.value));*/}
+            {/*            updateChart();*/}
+            {/*        }}*/}
+            {/*    >*/}
+            {/*        {overviewData?.commodities.map((commodity, index) => (*/}
+            {/*            <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>*/}
+            {/*        ))}*/}
+            {/*    </TextField>*/}
+            {/*    <TextField*/}
+            {/*        select*/}
+            {/*        sx={{ minWidth: 150 }}*/}
+            {/*        label="conflict"*/}
+            {/*        value={conflictIndex}*/}
+            {/*        onChange={(event) => {*/}
+            {/*            setConflictIndex(Number(event.target.value));*/}
+            {/*        }}*/}
+            {/*    >*/}
+            {/*        {overviewData?.conflicts.map((conflict, index) => (*/}
+            {/*            <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>*/}
+            {/*        ))}*/}
+            {/*    </TextField>*/}
+            {/*</Box>*/}
+            {/*<ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>*/}
             <DateRangePicker
                 value={range}
                 onChange={(newValue) => {
