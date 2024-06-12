@@ -30,52 +30,25 @@ public class ImportsController {
     @Autowired
     private DataSaveService dataSaveService;
 
-
-    @PostMapping("/conflicts")
-    public ResponseEntity<?> importConflicts(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/{name}")
+    public ResponseEntity<?> importData(@PathVariable("name") String name, @RequestParam("file") MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
-            List<ConflictRowData> result = dataImportService.importConflictData(inputStream);
-            conflictRepository.saveConflictList(result);
-            return ResponseEntity.ok("Conflicts data imported successfully");
+            switch (name) {
+                case "conflicts":
+                    List<ConflictRowData> conflictData = dataImportService.importConflictData(inputStream);
+                    conflictRepository.saveConflictList(conflictData);
+                    break;
+                case "cmo-historical":
+                    Map<CommodityCategory, List<CommodityPrice>> commodityData = dataImportService.importCMOHistoricalData(inputStream);
+                    dataSaveService.save(commodityData);
+                    break;
+                // pozostale
+                default:
+                    return ResponseEntity.status(400).body("Invalid import type specified");
+            }
+            return ResponseEntity.ok("Data imported successfully");
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to import conflicts data");
+            return ResponseEntity.status(500).body("Failed to import data");
         }
     }
-
-    @PostMapping("/commodities/cmo-historical")
-    public ResponseEntity<?> importCMOHistorical(@RequestParam("file") MultipartFile file) {
-        try (InputStream inputStream = file.getInputStream()) {
-            Map<CommodityCategory, List<CommodityPrice>> result = dataImportService.importCMOHistoricalData(inputStream);
-            dataSaveService.save(result);
-            return ResponseEntity.ok("CMO Historical data imported successfully");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to import CMO Historical data");
-        }
-    }
-
-    /*
-    @PostMapping("/commodities/crude-oil")
-    public ResponseEntity<?> importCrudeOil(@RequestParam("file") MultipartFile file) {
-        try (InputStream inputStream = file.getInputStream()) {
-            List<Commodity> result = dataImportService.importCommoditiesData(inputStream, "Crude Oil");
-            dataSaveService.saveCommodities(result);
-            return ResponseEntity.ok("Crude Oil data imported successfully");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to import Crude Oil data");
-        }
-    }
-
-    @PostMapping("/commodities/metals")
-    public ResponseEntity<?> importMetals(@RequestParam("file") MultipartFile file) {
-        try (InputStream inputStream = file.getInputStream()) {
-            List<Commodity> result = dataImportService.importMetalsData(inputStream);
-            dataSaveService.saveCommodities(result);
-            return ResponseEntity.ok("Metals data imported successfully");
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Failed to import Metals data");
-        }
-    }
-     */
-
 }
-

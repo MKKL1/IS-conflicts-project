@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { Box, Button, MenuItem, Select, Typography } from "@mui/material";
 import axios from "axios";
-import { useNotificationContext } from "../contexts/NotificationContext.tsx";
+import { useNotificationContext } from "../contexts/NotificationContext";
 import { NotificationVariants } from "../NotificationVariants.ts";
 
-//Statyczna lista plików
+// Statyczna lista plików
 const files = [
     "CMO-Historical-Data-Monthly.xlsx",
     "MainConflictTable.xls",
+    // pozostale
 ];
 
-//Mapowanie plików do endpointów API
-const fileApiMap: { [key: string]: string } = {
-    "CMO-Historical-Data-Monthly.xlsx": "commodities/cmo-historical",
+// Mapowanie plików do odpowiednich wartości 'name' dla endpointu API
+const fileApiNameMap: { [key: string]: string } = {
+    "CMO-Historical-Data-Monthly.xlsx": "cmo-historical",
     "MainConflictTable.xls": "conflicts",
+    // pozostale
 };
 
 export default function ImportPage() {
@@ -30,9 +32,9 @@ export default function ImportPage() {
             return;
         }
 
-        const endpoint = fileApiMap[selectedFile];
-        if (!endpoint) {
-            pushNotification("No API endpoint mapped for selected file", NotificationVariants.danger);
+        const apiName = fileApiNameMap[selectedFile];
+        if (!apiName) {
+            pushNotification("No API name mapped for selected file", NotificationVariants.danger);
             return;
         }
 
@@ -43,7 +45,7 @@ export default function ImportPage() {
                 const formData = new FormData();
                 formData.append("file", blob, selectedFile);
 
-                axios.post(`http://localhost:8080/api/imports/${endpoint}`, formData, {
+                axios.post(`http://localhost:8080/api/imports/${apiName}`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
