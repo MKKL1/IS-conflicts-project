@@ -42,7 +42,26 @@ public class ImportsController {
                     Map<CommodityCategory, List<CommodityPrice>> commodityData = dataImportService.importCMOHistoricalData(inputStream);
                     dataSaveService.save(commodityData);
                     break;
-                // pozostale
+                case "metals":
+                    Map<CommodityCategory, List<CommodityPrice>> metalsData = dataImportService.importMetalsData(inputStream);
+                    dataSaveService.save(metalsData);
+                    break;
+                case "coal":
+                    Map<CommodityCategory, List<CommodityPrice>> coalData = dataImportService.importCommoditiesData(inputStream, "Coal", "t");
+                    dataSaveService.save(coalData);
+                    break;
+                case "crudeOil":
+                    Map<CommodityCategory, List<CommodityPrice>> crudeOilData = dataImportService.importCommoditiesData(inputStream, "Crude Oil", "m^3");
+                    dataSaveService.save(crudeOilData);
+                    break;
+                case "gas":
+                    Map<CommodityCategory, List<CommodityPrice>> gasData = dataImportService.importCommoditiesData(inputStream, "Gas", "MWh");
+                    dataSaveService.save(gasData);
+                    break;
+                case "gold":
+                    Map<CommodityCategory, List<CommodityPrice>> goldData = dataImportService.importCommoditiesData(inputStream, "Gold", "kg");
+                    dataSaveService.save(goldData);
+                    break;
                 default:
                     return ResponseEntity.status(400).body("Invalid import type specified");
             }

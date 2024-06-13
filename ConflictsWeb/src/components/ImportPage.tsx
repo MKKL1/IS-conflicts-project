@@ -8,14 +8,22 @@ import { NotificationVariants } from "../NotificationVariants.ts";
 const files = [
     "CMO-Historical-Data-Monthly.xlsx",
     "MainConflictTable.xls",
-    // pozostale
+    "MetalsPricesData.csv",
+    "CoalPricesData.csv",
+    "CrudeOilPricesData.csv",
+    "GasPricesData.csv",
+    "GoldPricesData.csv",
 ];
 
 // Mapowanie plików do odpowiednich wartości 'name' dla endpointu API
 const fileApiNameMap: { [key: string]: string } = {
     "CMO-Historical-Data-Monthly.xlsx": "cmo-historical",
     "MainConflictTable.xls": "conflicts",
-    // pozostale
+    "MetalsPricesData.csv": "metals",
+    "CoalPricesData.csv": "coal",
+    "CrudeOilPricesData.csv": "crudeOil",
+    "GasPricesData.csv": "gas",
+    "GoldPricesData.csv": "gold",
 };
 
 export default function ImportPage() {
