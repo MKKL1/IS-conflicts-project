@@ -8,13 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class CSVConverter {
 
-    public static <T> List<T> convert(InputStream inputStream, Function<String[], T> rowFactory, boolean skipHeader) throws IOException{
-        List<T> rowList = new ArrayList<>();
+    public static void convert(InputStream inputStream, Consumer<String[]> rowConsumer, boolean skipHeader) throws IOException{
         try(CSVReader csvReader = new CSVReader(new InputStreamReader(inputStream))){
             List<String[]> allRows = csvReader.readAll();
             Stream<String[]> rowStream = allRows.stream();
@@ -23,10 +23,9 @@ public class CSVConverter {
                 rowStream = rowStream.skip(1);
             }
 
-            rowStream.forEach(row -> rowList.add(rowFactory.apply(row)));
+            rowStream.forEach(rowConsumer);
         } catch (CsvException e){
             throw new IOException("Error reading CSV data", e);
         }
-        return rowList;
     }
 }
