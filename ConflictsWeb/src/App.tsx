@@ -9,6 +9,7 @@ import Register from "./components/Register.tsx";
 import Login from "./components/Login.tsx";
 import HomePage from "./components/HomePage.tsx";
 import {useNotificationContext} from "./contexts/NotificationContext.tsx";
+import ImportPage from "./components/ImportPage.tsx";
 
 function App() {
     const {message, variant} = useNotificationContext();
@@ -27,6 +28,9 @@ function App() {
                   <Route path='/add' element={<AdminGuard>
                       <></>
                   </AdminGuard>}/>
+                  <Route path='/import' element={<AuthGuard>
+                      <ImportPage/>
+                  </AuthGuard>}/>
                   <Route path='/profile' element={<AuthGuard>
                       {/*<Profile/>*/}
                       <></>
