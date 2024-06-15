@@ -1,13 +1,24 @@
+import {number, string} from "yup";
+
 export class Conflict {
     id: number;
     location: string;
-    start: string;
-    end: string|undefined;
+    sideA: string;
+    sideB: string;
+    conflictType: string;
+    conflictIntensity: string;
+    startTime: string;
+    endTime: string|undefined;
 
-    constructor(id: number, location: string, start: string, end: string|undefined) {
+
+    constructor(id: number, location: string, sideA: string, sideB: string, conflictType: string, conflictIntensity: string, startTime: string, endTime: string | undefined) {
         this.id = id;
         this.location = location;
-        this.start = start;
-        this.end = end;
+        this.sideA = sideA;
+        this.sideB = sideB;
+        this.conflictType = conflictType;
+        this.conflictIntensity = conflictIntensity;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
