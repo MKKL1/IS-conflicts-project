@@ -34,13 +34,13 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
         options: {
             chart: {
                 id: 'commodity-price-chart',
-                toolbar: {
-                    autoSelected: 'pan',
-                    show: false
-                },
-                zoom: {
-                    enabled: false
-                },
+                // toolbar: {
+                //     autoSelected: 'pan',
+                //     show: false
+                // },
+                // zoom: {
+                //     enabled: false
+                // },
             },
             annotations: {
                 xaxis: conflictRange ? [

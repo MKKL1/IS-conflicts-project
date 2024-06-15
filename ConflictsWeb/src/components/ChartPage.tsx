@@ -1,4 +1,4 @@
-import {MenuItem, TextField, Button, Box} from "@mui/material";
+import {MenuItem, TextField, Button, Box, Container} from "@mui/material";
 import {useEffect, useState} from "react";
 import ChartComponent from "./ChartComponent.tsx";
 import axios from "axios";
@@ -19,9 +19,9 @@ export default function ChartPage() {
     const [commodityIndex, setCommodityIndex] = useState<number>(-1);
     const [groupBy, setGroupBy] = useState<number>(12);
     const [conflictIndex, setConflictIndex] = useState<number>(-1);
-    const [dataset, setDataset] = useState([]);
-    // const [range, setRange] = useState<Dayjs[]>();
+    const [dataset, setDataset] = useState<DatePrice[]>([]);
     const [conflictRange, setConflictRange] = useState<Dayjs[]>();
+    const [filteredConflicts, setFilteredConflicts] = useState([]);
 
     function getCommodity(index: number) {
         return overviewData?.commodities[index];
@@ -43,32 +43,62 @@ export default function ChartPage() {
             });
     }, [pushNotification]);
 
-    function updateChart() {
-        const commodity = getCommodity(commodityIndex);
-        if (commodity) {
-            axios.get(`http://localhost:8080/api/commodities/${commodity?.id}`)
-                .then(res => {
-                    console.log(res.data);
-                    const formattedResponse = res.data.map((item: DatePrice) => ({
-                        ...item,
-                        date: new Date(item.date)
-                    }));
-                    setDataset(formattedResponse);
-                })
-                .catch(err => {
-                    console.error(err);
-                    pushNotification("Error occurred during loading", NotificationVariants.danger);
-                });
+    useEffect(() => {
+        if (commodityIndex >= 0) {
+            const commodity = getCommodity(commodityIndex);
+            if (commodity) {
+                axios.get(`http://localhost:8080/api/commodities/${commodity.id}`)
+                    .then(res => {
+                        console.log(res.data);
+                        const formattedResponse = res.data.map((item: DatePrice) => ({
+                            ...item,
+                            date: new Date(item.date)
+                        }));
+                        setDataset(formattedResponse);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        pushNotification("Error occurred during loading", NotificationVariants.danger);
+                    });
+            }
         }
-    }
+    }, [commodityIndex, pushNotification]);
+
+    useEffect(() => {
+        if (dataset.length && overviewData?.conflicts) {
+            const dates = dataset.map(item => item.date.getTime());
+            const minDate = dayjs(Math.min(...dates));
+            const maxDate = dayjs(Math.max(...dates));
+
+            const filtered = overviewData.conflicts.filter(conflict => {
+                const conflictStart = dayjs(conflict.startTime);
+                const conflictEnd = dayjs(conflict.endTime);
+                return (conflictStart.isBefore(maxDate) && conflictEnd.isAfter(minDate));
+            });
+
+            setFilteredConflicts(filtered);
+        }
+    }, [dataset, overviewData]);
 
     function handleExport(format: 'json' | 'xml') {
         const conflict = getConflict(conflictIndex);
         const commodity = getCommodity(commodityIndex);
-        if (conflictIndex === -1 || commodityIndex === -1 || !dataset.length) {
-            pushNotification("Please select a conflict and a commodity, and make sure data is loaded", NotificationVariants.warning);
+
+        if (conflictIndex === -1) {
+            pushNotification("Please select a conflict", NotificationVariants.warning);
             return;
         }
+
+        if (commodityIndex === -1) {
+            pushNotification("Please select a commodity", NotificationVariants.warning);
+            return;
+        }
+
+        if (!dataset.length) {
+            pushNotification("Please make sure data is loaded", NotificationVariants.warning);
+            return;
+        }
+
         const data = { conflict, commodity, dataset };
         if (format === 'json') {
             exportDataAsJSON(data);
@@ -76,6 +106,7 @@ export default function ChartPage() {
             exportDataAsXML(data);
         }
     }
+
 
     function handleSelectionModelChange(rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) {
         if (rowSelectionModel.length > 0) {
@@ -86,60 +117,68 @@ export default function ChartPage() {
             }
         } else {
             setConflictRange(undefined);
-            setCommodityIndex(-1);
+            setConflictIndex(-1);
         }
     }
 
     return (
-        <Box>
-            <Box display="flex" gap={3} mb={2}>
-                { overviewData?.commodities &&
-                    <ConflictTable
-                        rows={overviewData?.conflicts}
-                        onSelectionModelChange={handleSelectionModelChange}
-                    />
-                }
-            </Box>
+        <Container maxWidth="md">
+            <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" p={2}>
 
-            <ChartComponent dataset={dataset} groupByMonths={groupBy} conflictRange={conflictRange}/>
-            <Box display="flex" gap={3} mb={2}>
-                <TextField
-                    select
-                    sx={{ minWidth: 150 }}
-                    label="commodity"
-                    value={commodityIndex}
-                    onChange={(event) => {
-                        setCommodityIndex(Number(event.target.value));
-                        updateChart();
-                    }}
-                >
-                    {overviewData?.commodities.map((commodity, index) => (
-                        <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    select
-                    sx={{ minWidth: 150 }}
-                    label="group by"
-                    value={groupBy}
-                    onChange={(event) => {
-                        setGroupBy(Number(event.target.value));
-                    }}
-                >
-                    <MenuItem key={1} value={1}>1</MenuItem>
-                    <MenuItem key={3} value={3}>3</MenuItem>
-                    <MenuItem key={6} value={6}>6</MenuItem>
-                    <MenuItem key={12} value={12}>12</MenuItem>
-                </TextField>
+                <Box display="flex" gap={3} mb={2}>
+                    <TextField
+                        select
+                        sx={{ minWidth: 150 }}
+                        label="Commodity"
+                        value={commodityIndex}
+                        onChange={(event) => {
+                            setCommodityIndex(Number(event.target.value));
+                        }}
+                    >
+                        {overviewData?.commodities.map((commodity, index) => (
+                            <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        select
+                        sx={{ minWidth: 150 }}
+                        label="Group by"
+                        value={groupBy}
+                        onChange={(event) => {
+                            setGroupBy(Number(event.target.value));
+                        }}
+                    >
+                        <MenuItem key={1} value={1}>1</MenuItem>
+                        <MenuItem key={3} value={3}>3</MenuItem>
+                        <MenuItem key={6} value={6}>6</MenuItem>
+                        <MenuItem key={12} value={12}>12</MenuItem>
+                    </TextField>
+                </Box>
+
+                {commodityIndex !== -1 && (
+                    <>
+                        <Box display="flex" gap={3} mb={2} width="100%">
+                            {overviewData?.commodities && (
+                                <ConflictTable
+                                    rows={filteredConflicts}
+                                    onSelectionModelChange={handleSelectionModelChange}
+                                />
+                            )}
+                        </Box>
+
+                        <ChartComponent dataset={dataset} groupByMonths={groupBy} conflictRange={conflictRange} />
+
+                        <Box display="flex" gap={3} mt={2}>
+                            <Button variant="contained" color="primary" onClick={() => handleExport('json')}>
+                                Export as JSON
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={() => handleExport('xml')}>
+                                Export as XML
+                            </Button>
+                        </Box>
+                    </>
+                )}
             </Box>
-            <Box display="flex" gap={3} mt={2}>
-                <Button variant="contained" color="primary" onClick={() => handleExport('json')}>
-                    Export as JSON
-                </Button>
-                <Button variant="contained" color="secondary" onClick={() => handleExport('xml')}>
-                    Export as XML
-                </Button>
-            </Box>
-        </Box>
+        </Container>
     );
 }
