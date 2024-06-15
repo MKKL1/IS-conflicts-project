@@ -6,6 +6,8 @@ import islab.project.conflictsserver.commodities.CommodityCategoryDTO;
 import islab.project.conflictsserver.commodities.CommodityCategoryRepository;
 import islab.project.conflictsserver.conflict.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class OverviewService {
         this.conflictMapper = conflictMapper;
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public CommodityConflictDTO getCommodityCategoriesAndConflicts() {
         List<CommodityCategoryDTO> commodityCategoryList = StreamSupport.stream(commodityCategoryRepository.findAll().spliterator(), false)
                 .map(x -> new CommodityCategoryDTO(x. getId(), x.getType(), x.getRegion(), x.getUnit()))
