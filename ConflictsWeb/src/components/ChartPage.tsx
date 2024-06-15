@@ -10,6 +10,7 @@ import DateRangePicker from "./DateRangePicker.tsx";
 import { exportDataAsJSON, exportDataAsXML } from "../utils/dataExport.ts";
 import ConflictTable from "./ConflictTable.tsx";
 import {DatePrice} from "../models/DatePrice.ts";
+import {GridCallbackDetails, GridRowSelectionModel} from "@mui/x-data-grid";
 
 export default function ChartPage() {
     const {pushNotification} = useNotificationContext();
@@ -20,7 +21,7 @@ export default function ChartPage() {
     const [conflictIndex, setConflictIndex] = useState<number>(-1);
     const [dataset, setDataset] = useState([]);
     // const [range, setRange] = useState<Dayjs[]>();
-    const [conflictRange, setconflictRange] = useState<Dayjs[]>();
+    const [conflictRange, setConflictRange] = useState<Dayjs[]>();
 
     function getCommodity(index: number) {
         return overviewData?.commodities[index];
@@ -41,15 +42,6 @@ export default function ChartPage() {
                 pushNotification("Error occurred during loading", NotificationVariants.danger);
             });
     }, [pushNotification]);
-
-    // useEffect(() => {
-    //     const conflict = getConflict(conflictIndex);
-    //     if(conflict) {
-    //         const enddate = conflict.end ? dayjs(conflict.end) : dayjs();
-    //         setRange([dayjs(conflict.start).add(-2, 'month'), enddate.add(2, 'month')]);
-    //         setconflictRange([dayjs(conflict.start), dayjs(conflict.end)]);
-    //     }
-    // }, [conflictIndex]);
 
     function updateChart() {
         const commodity = getCommodity(commodityIndex);
@@ -85,13 +77,27 @@ export default function ChartPage() {
         }
     }
 
+    function handleSelectionModelChange(rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) {
+        if (rowSelectionModel.length > 0) {
+            const selectedConflict = overviewData?.conflicts.find(conflict => conflict.id === rowSelectionModel[0]);
+            if (selectedConflict) {
+                setConflictRange([dayjs(selectedConflict.startTime), dayjs(selectedConflict.endTime)]);
+                setConflictIndex(rowSelectionModel[0] as number);
+            }
+        } else {
+            setConflictRange(undefined);
+            setCommodityIndex(-1);
+        }
+    }
+
     return (
         <Box>
             <Box display="flex" gap={3} mb={2}>
                 { overviewData?.commodities &&
                     <ConflictTable
-                        rows={overviewData?.conflicts}>
-                    </ConflictTable>
+                        rows={overviewData?.conflicts}
+                        onSelectionModelChange={handleSelectionModelChange}
+                    />
                 }
             </Box>
 
@@ -126,12 +132,6 @@ export default function ChartPage() {
                     <MenuItem key={12} value={12}>12</MenuItem>
                 </TextField>
             </Box>
-            {/*<DateRangePicker*/}
-            {/*    value={range}*/}
-            {/*    onChange={(newValue) => {*/}
-            {/*        setRange(newValue);*/}
-            {/*    }}*/}
-            {/*/>*/}
             <Box display="flex" gap={3} mt={2}>
                 <Button variant="contained" color="primary" onClick={() => handleExport('json')}>
                     Export as JSON

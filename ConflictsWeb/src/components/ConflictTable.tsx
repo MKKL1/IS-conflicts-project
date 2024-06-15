@@ -1,12 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {DataGrid, GridColDef, GridRowId} from '@mui/x-data-grid';
+import {DataGrid, GridCallbackDetails, GridColDef, GridRowId, GridRowSelectionModel} from '@mui/x-data-grid';
 import {Conflict} from '../models/Conflict';
 
 interface ConflictTableProps {
     rows: Conflict[];
+    onSelectionModelChange: (rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) => void;
 }
 
-export default function ConflictTable({rows}: ConflictTableProps) {
+export default function ConflictTable({rows, onSelectionModelChange}: ConflictTableProps) {
     const columns: GridColDef[] = [
         // {field: 'id', headerName: 'ID', width: 70},
         // {field: 'location', headerName: 'Location', width: 130},
@@ -60,6 +61,7 @@ export default function ConflictTable({rows}: ConflictTableProps) {
                 disableMultipleRowSelection={true}
                 autoPageSize
                 // hideFooterSelectedRowCount
+                onRowSelectionModelChange={onSelectionModelChange}
             />
         </div>
     );

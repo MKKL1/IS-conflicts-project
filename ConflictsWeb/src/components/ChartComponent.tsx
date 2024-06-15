@@ -22,7 +22,6 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
                 y: record.price
             }));
             setLinearData(volumeData);
-            console.log(volumeData);
 
             const dates = a.map(d => d.x);
             const minDate = new Date(Math.min(...dates.map(date => date.getTime())));
@@ -42,6 +41,26 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
                 zoom: {
                     enabled: false
                 },
+            },
+            annotations: {
+                xaxis: conflictRange ? [
+                    {
+                        x: conflictRange[0].unix() * 1000,
+                        x2: conflictRange[1].unix() * 1000,
+                        fillColor: '#B3F7CA',
+                        opacity: 0.4,
+                        label: {
+                            borderColor: '#B3F7CA',
+                            style: {
+                                fontSize: '10px',
+                                color: '#fff',
+                                background: '#00E396',
+                            },
+                            offsetY: -10,
+                            text: 'Conflict Range',
+                        }
+                    }
+                ] : []
             },
             xaxis: {
                 type: 'datetime'
@@ -79,23 +98,23 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
             dataLabels: {
                 enabled: false
             },
-            plotOptions: {
-                bar: {
-                    columnWidth: '80%',
-                    colors: {
-                        ranges: [{
-                            from: -1000,
-                            to: 0,
-                            color: '#F15B46'
-                        }, {
-                            from: 1,
-                            to: 10000,
-                            color: '#FEB019'
-                        }],
-
-                    },
-                }
-            },
+            // plotOptions: {
+            //     bar: {
+            //         columnWidth: '80%',
+            //         colors: {
+            //             ranges: [{
+            //                 from: -1000,
+            //                 to: 0,
+            //                 color: '#F15B46'
+            //             }, {
+            //                 from: 1,
+            //                 to: 10000,
+            //                 color: '#FEB019'
+            //             }],
+            //
+            //         },
+            //     }
+            // },
             stroke: {
                 width: 0
             },
@@ -115,7 +134,7 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
 
 
     return (
-        candleStickData &&
+        candleStickData && linearData &&
         <Paper sx={{ width: '100%', height: 480 }} elevation={3}>
 
             <Chart options={state.options} series={state.series} type="candlestick" height={300} width={'100%'}/>
