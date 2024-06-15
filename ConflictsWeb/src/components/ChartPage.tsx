@@ -16,9 +16,10 @@ export default function ChartPage() {
 
     const [overviewData, setOverviewData] = useState<OverviewResponse>();
     const [commodityIndex, setCommodityIndex] = useState<number>(-1);
+    const [groupBy, setGroupBy] = useState<number>(12);
     const [conflictIndex, setConflictIndex] = useState<number>(-1);
     const [dataset, setDataset] = useState([]);
-    const [range, setRange] = useState<Dayjs[]>();
+    // const [range, setRange] = useState<Dayjs[]>();
     const [conflictRange, setconflictRange] = useState<Dayjs[]>();
 
     function getCommodity(index: number) {
@@ -94,7 +95,7 @@ export default function ChartPage() {
                 }
             </Box>
 
-            <ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>
+            <ChartComponent dataset={dataset} groupByMonths={groupBy} conflictRange={conflictRange}/>
             <Box display="flex" gap={3} mb={2}>
                 <TextField
                     select
@@ -110,27 +111,27 @@ export default function ChartPage() {
                         <MenuItem key={index} value={index}>{commodity.type} - {commodity.region}</MenuItem>
                     ))}
                 </TextField>
-                {/*<TextField*/}
-                {/*    select*/}
-                {/*    sx={{ minWidth: 150 }}*/}
-                {/*    label="conflict"*/}
-                {/*    value={conflictIndex}*/}
-                {/*    onChange={(event) => {*/}
-                {/*        setConflictIndex(Number(event.target.value));*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    {overviewData?.conflicts.map((conflict, index) => (*/}
-                {/*        <MenuItem key={index} value={index}>{conflict.location} - [{conflict.start} - {conflict.end}]</MenuItem>*/}
-                {/*    ))}*/}
-                {/*</TextField>*/}
+                <TextField
+                    select
+                    sx={{ minWidth: 150 }}
+                    label="group by"
+                    value={groupBy}
+                    onChange={(event) => {
+                        setGroupBy(Number(event.target.value));
+                    }}
+                >
+                    <MenuItem key={1} value={1}>1</MenuItem>
+                    <MenuItem key={3} value={3}>3</MenuItem>
+                    <MenuItem key={6} value={6}>6</MenuItem>
+                    <MenuItem key={12} value={12}>12</MenuItem>
+                </TextField>
             </Box>
-            {/*<ChartComponent dataset={dataset} range={range} conflictRange={conflictRange}/>*/}
-            <DateRangePicker
-                value={range}
-                onChange={(newValue) => {
-                    setRange(newValue);
-                }}
-            />
+            {/*<DateRangePicker*/}
+            {/*    value={range}*/}
+            {/*    onChange={(newValue) => {*/}
+            {/*        setRange(newValue);*/}
+            {/*    }}*/}
+            {/*/>*/}
             <Box display="flex" gap={3} mt={2}>
                 <Button variant="contained" color="primary" onClick={() => handleExport('json')}>
                     Export as JSON

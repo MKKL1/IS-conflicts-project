@@ -5,17 +5,13 @@ export function convertToCandlestickData(data: DatePrice[], groupByMonths: numbe
         throw new Error("groupByMonths must be greater than 0");
     }
 
-    // Sort data by date to ensure proper grouping
     const sortedData = data.slice().sort((a, b) => a.date.getTime() - b.date.getTime());
 
     const result: {x: Date, y: [number, number, number, number]}[] = [];
     let currentGroup: DatePrice[] = [];
 
     sortedData.forEach((record, index) => {
-        // Add the current record to the current group
         currentGroup.push(record);
-
-        // Check if the current group has reached the desired number of months or it's the last record
         const groupIsComplete = currentGroup.length === groupByMonths;
         const isLastRecord = index === sortedData.length - 1;
 
