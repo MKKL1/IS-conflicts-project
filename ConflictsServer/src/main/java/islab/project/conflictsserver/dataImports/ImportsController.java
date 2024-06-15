@@ -38,6 +38,8 @@ public class ImportsController {
                     List<ConflictRowData> conflictData = dataImportService.importConflictData(inputStream);
                     conflictRepository.saveConflictList(conflictData);
                     break;
+                case "custom":
+                    //to co nizej
                 case "cmo-historical":
                     Map<CommodityCategory, List<CommodityPrice>> commodityData = dataImportService.importCMOHistoricalData(inputStream);
                     dataSaveService.save(commodityData);
