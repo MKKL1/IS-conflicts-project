@@ -15,6 +15,7 @@ const files = [
     "CrudeOilPricesData.csv",
     "GasPricesData.csv",
     "GoldPricesData.csv",
+    "AdditionalConflictTable.xls",
 ];
 
 // Mapowanie plików do odpowiednich wartości 'name' dla endpointu API
@@ -26,6 +27,7 @@ const fileApiNameMap: { [key: string]: string } = {
     "CrudeOilPricesData.csv": "crudeOil",
     "GasPricesData.csv": "gas",
     "GoldPricesData.csv": "gold",
+    "AdditionalConflictTable.xls": "conflicts",
 };
 
 export default function ImportPage() {

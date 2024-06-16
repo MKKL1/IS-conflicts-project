@@ -34,6 +34,7 @@ public class DataImportService {
         return filterConflictData(XLSConverter.convert(inputStream, row -> {
 
             Cell endTimeCell = row.getCell(17);
+            log.info(row.getCell(1).getStringCellValue());
             return ConflictRowData.builder()
                     .docId((int) row.getCell(0).getNumericCellValue())
                     .location(row.getCell(1).getStringCellValue())
