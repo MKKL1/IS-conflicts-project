@@ -25,12 +25,9 @@ function App() {
                   <Route path='/register' element={<GuestGuard>
                       <Register/>
                   </GuestGuard>}/>
-                  <Route path='/add' element={<AdminGuard>
-                      <></>
-                  </AdminGuard>}/>
-                  <Route path='/import' element={<AuthGuard>
+                  <Route path='/import' element={<AdminGuard>
                       <ImportPage/>
-                  </AuthGuard>}/>
+                  </AdminGuard>}/>
                   <Route path='/profile' element={<AuthGuard>
                       {/*<Profile/>*/}
                       <></>

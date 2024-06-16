@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Box, Button, MenuItem, Select, Typography, TextField } from "@mui/material";
 import axios from "axios";
 import { useNotificationContext } from "../contexts/NotificationContext";
@@ -30,26 +30,24 @@ const fileApiNameMap: { [key: string]: string } = {
 
 export default function ImportPage() {
     const { pushNotification } = useNotificationContext();
-    const [selectedFile, setSelectedFile] = useState<string | File>("");
+    const [selectedFileType, setSelectedFileType] = useState<string>("");
     const [customFile, setCustomFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>("");
 
     const handleFileChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelectedFile(event.target.value as string);
-        setCustomFile(null); // Reset custom file if a predefined file is selected
+        setSelectedFileType(event.target.value as string);
     };
 
     const handleCustomFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
-            setCustomFile(event.target.files[0]);
-            setSelectedFile(""); // Reset selected file if a custom file is chosen
+            setCustomFile(event.target.files[0])
         }
     };
 
     const handleImport = () => {
         setMessage(""); // Reset message before new import
-        let fileToUpload;
-        let apiName;
+        // let fileToUpload;
+        // let apiName;
 
         if (customFile) {
             const validationError = validateFile(customFile);
@@ -58,45 +56,51 @@ export default function ImportPage() {
                 pushNotification(validationError, NotificationVariants.danger);
                 return;
             }
-            fileToUpload = customFile;
-            apiName = "custom";
-        } else if (selectedFile) {
-            apiName = fileApiNameMap[selectedFile];
-            if (!apiName) {
-                const errorMessage = "No API name mapped for selected file";
-                setMessage(errorMessage);
-                pushNotification(errorMessage, NotificationVariants.danger);
-                return;
-            }
-            // Fetch the file from the assets folder
-            fetch(`src/assets/resources/${selectedFile}`)
-                .then(response => response.blob())
-                .then(blob => {
-                    fileToUpload = new File([blob], selectedFile);
-                    sendFileToApi(fileToUpload, apiName);
-                })
-                .catch(error => {
-                    const errorMessage = "Failed to load the file";
-                    setMessage(errorMessage);
-                    pushNotification(errorMessage, NotificationVariants.danger);
-                    console.error(error);
-                });
-            return; // Exit early because fetch is asynchronous
-        } else {
-            const warningMessage = "Please select or upload a file";
-            setMessage(warningMessage);
-            pushNotification(warningMessage, NotificationVariants.warning);
-            return;
-        }
+            // fileToUpload = customFile;
+            // apiName = "custom";
 
-        sendFileToApi(fileToUpload, apiName);
+            sendFileToApi(customFile, fileApiNameMap[selectedFileType]);
+
+        } else {
+            pushNotification("Select a file before uploading", NotificationVariants.danger);
+        }
+        // else if (selectedFile) {
+        //     apiName = fileApiNameMap[selectedFile];
+        //     if (!apiName) {
+        //         const errorMessage = "No API name mapped for selected file";
+        //         setMessage(errorMessage);
+        //         pushNotification(errorMessage, NotificationVariants.danger);
+        //         return;
+        //     }
+        //     // Fetch the file from the assets folder
+        //     fetch(`src/assets/resources/${selectedFile}`)
+        //         .then(response => response.blob())
+        //         .then(blob => {
+        //             fileToUpload = new File([blob], selectedFile);
+        //             sendFileToApi(fileToUpload, apiName);
+        //         })
+        //         .catch(error => {
+        //             const errorMessage = "Failed to load the file";
+        //             setMessage(errorMessage);
+        //             pushNotification(errorMessage, NotificationVariants.danger);
+        //             console.error(error);
+        //         });
+        //     return; // Exit early because fetch is asynchronous
+        // } else {
+        //     const warningMessage = "Please select or upload a file";
+        //     setMessage(warningMessage);
+        //     pushNotification(warningMessage, NotificationVariants.warning);
+        //     return;
+        // }
+
+        // sendFileToApi(fileToUpload, apiName);
     };
 
-    const sendFileToApi = (file: File, apiName: string) => {
+    const sendFileToApi = (file: File, fileType: string) => {
         const formData = new FormData();
         formData.append("file", file, file.name);
 
-        axios.post(`http://localhost:8080/api/imports/${apiName}`, formData, {
+        axios.post(`http://localhost:8080/api/imports/${fileType}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -119,7 +123,7 @@ export default function ImportPage() {
             <Typography variant="h4" mb={2}>Import Data</Typography>
             <Typography variant="h6" mb={2}>Select file to import</Typography>
             <Select
-                value={typeof selectedFile === "string" ? selectedFile : ""}
+                value={selectedFileType}
                 onChange={handleFileChange}
                 displayEmpty
                 sx={{ minWidth: 200, mb: 2 }}
@@ -129,7 +133,6 @@ export default function ImportPage() {
                     <MenuItem key={index} value={file}>{file}</MenuItem>
                 ))}
             </Select>
-            <Typography variant="h6" mb={2}>Or upload a custom file</Typography>
             <TextField
                 type="file"
                 onChange={handleCustomFileChange}
@@ -140,7 +143,7 @@ export default function ImportPage() {
                 variant="contained"
                 color="primary"
                 onClick={handleImport}
-                disabled={!selectedFile && !customFile}
+                disabled={!selectedFileType && !customFile}
             >
                 Import
             </Button>

@@ -17,13 +17,15 @@ export default function NavigationBar() {
             <Navbar.Collapse id="navbarScroll">
                 <Nav className="ms-auto my-2 my-lg-0" style={{maxHeight: '100vh'}} navbarScroll>
                     {isAuth && user.role == Role.ADMIN &&
-                        <>
-                            <Nav.Link as={Link} to='/export'>Export</Nav.Link>
-                        </>
+                            <Nav.Link as={Link} to='/import'>Import Data</Nav.Link>
                     }
+                    <>
+                    {
+                        console.log("user2", user)
+                    }
+                    </>
                     {isAuth ?
                         <>
-                            <Nav.Link as={Link} to='/import'>Import Data</Nav.Link>
                             <Nav.Link as={Link} to='/profile'>Hello, {user.username}</Nav.Link>
                             <Nav.Link onClick={() => {
                                 resetToken();

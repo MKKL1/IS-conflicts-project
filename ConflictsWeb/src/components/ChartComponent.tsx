@@ -1,7 +1,6 @@
 import {Paper} from "@mui/material";
 import { Dayjs } from 'dayjs';
 import Chart from 'react-apexcharts';
-import { format, min, max } from 'date-fns';
 import {DatePrice} from "../models/DatePrice.ts";
 import {useEffect, useState} from "react";
 import {convertToCandlestickData} from "../utils/candlestickConverter.ts";
@@ -75,7 +74,7 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
         optionsBar: {
             chart: {
                 height: 160,
-                type: 'bar',
+                type: 'area',
                 brush: {
                     enabled: true,
                     target: 'commodity-price-chart'
@@ -98,37 +97,37 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
             dataLabels: {
                 enabled: false
             },
-            // plotOptions: {
-            //     bar: {
-            //         columnWidth: '80%',
-            //         colors: {
-            //             ranges: [{
-            //                 from: -1000,
-            //                 to: 0,
-            //                 color: '#F15B46'
-            //             }, {
-            //                 from: 1,
-            //                 to: 10000,
-            //                 color: '#FEB019'
-            //             }],
-            //
-            //         },
-            //     }
-            // },
+            plotOptions: {
+                bar: {
+                    columnWidth: '80%',
+                    colors: {
+                        ranges: [{
+                            from: -1000,
+                            to: 0,
+                            color: '#F15B46'
+                        }, {
+                            from: 1,
+                            to: 10000,
+                            color: '#FEB019'
+                        }],
+
+                    },
+                }
+            },
             stroke: {
-                width: 0
+                curve: 'straight'
             },
             xaxis: {
                 type: 'datetime',
-                axisBorder: {
-                    offsetX: 13
-                }
+                // axisBorder: {
+                //     offsetX: 13
+                // }
             },
-            yaxis: {
-                labels: {
-                    show: false
-                }
-            }
+            // yaxis: {
+            //     labels: {
+            //         show: false
+            //     }
+            // }
         },
     }
 

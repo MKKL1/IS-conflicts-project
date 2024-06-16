@@ -14,8 +14,6 @@ export const validateFile = (file: File): string | null => {
         return `File type not supported. Allowed types: ${allowedExtensions.join(", ")}`;
     }
 
-    //tutaj dopisz dalej walidacje do poszczegolnych kolumn
-
 
     // zwróć null jesli cala walidacja przebiegla pomyslnie
     return null;

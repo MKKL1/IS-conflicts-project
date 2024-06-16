@@ -122,7 +122,7 @@ export default function ChartPage() {
     }
 
     return (
-        <Container maxWidth="md">
+        <Container maxWidth="xl">
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" p={2}>
 
                 <Box display="flex" gap={3} mb={2}>
