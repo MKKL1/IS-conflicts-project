@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     // checking if token exists already in localstorage
     // while starting app
     useEffect(() => {
+
         const token = localStorage.getItem("token");
         if (token !== null && token !== '') {
             updateToken(token);
@@ -41,9 +42,14 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         setToken(accessToken);
         const parts = accessToken.split('.');
         const decodedPayload = JSON.parse(atob(parts[1]));
+        console.log("role ", decodedPayload.role)
+        let role = Role.USER;
+        if(decodedPayload.role[0] === "ROLE_ADMIN") {
+            role = Role.ADMIN
+        }
         setUser(new User(
             decodedPayload.sub,
-            Role[decodedPayload.role as keyof typeof Role]
+            role
         ));
 
         localStorage.setItem("token", accessToken);

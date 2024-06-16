@@ -7,6 +7,7 @@ import islab.project.conflictsserver.services.DataImportService;
 import islab.project.conflictsserver.services.DataSaveService;
 import islab.project.conflictsserver.conflict.ConflictRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/imports")
+@Slf4j
 public class ImportsController {
 
     @Autowired
@@ -65,6 +67,7 @@ public class ImportsController {
                 default:
                     return ResponseEntity.status(400).body("Invalid import type specified");
             }
+            log.info("Data imported successfully, by name {}", name);
             return ResponseEntity.ok("Data imported successfully");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to import data");

@@ -25,16 +25,9 @@ function App() {
                   <Route path='/register' element={<GuestGuard>
                       <Register/>
                   </GuestGuard>}/>
-                  <Route path='/add' element={<AdminGuard>
-                      <></>
-                  </AdminGuard>}/>
-                  <Route path='/import' element={<AuthGuard>
+                  <Route path='/import' element={<AdminGuard>
                       <ImportPage/>
-                  </AuthGuard>}/>
-                  <Route path='/profile' element={<AuthGuard>
-                      {/*<Profile/>*/}
-                      <></>
-                  </AuthGuard>}/>
+                  </AdminGuard>}/>
               </Routes>
           </BrowserRouter>
           <Notification message={message} variant={variant}/>

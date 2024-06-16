@@ -17,7 +17,6 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
 
-    // jak daje z tokenem żądania to sie wysypuje
     public AuthenticationResponse register(RegisterRequest request) {
         User user = User
                 .builder()
