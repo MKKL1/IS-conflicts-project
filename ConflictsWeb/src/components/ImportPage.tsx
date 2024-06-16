@@ -3,9 +3,9 @@ import { Box, Button, MenuItem, Select, Typography, TextField } from "@mui/mater
 import axios from "axios";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { NotificationVariants } from "../NotificationVariants";
-import { validateFile } from "../utils/fileValidation"; // Importowanie funkcji walidacji
-import { useAuthContext } from "../contexts/AuthContext"; // Import the useAuthContext hook
-import "../ImportPage.css"; // Importowanie pliku CSS
+import { validateFile } from "../utils/fileValidation";
+import { useAuthContext } from "../contexts/AuthContext";
+import "../ImportPage.css";
 
 // Statyczna lista plików
 const files = [

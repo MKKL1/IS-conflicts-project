@@ -1,5 +1,3 @@
-// utils/fileValidation.ts
-
 export const validateFile = (file: File): string | null => {
     //sprawdzenie rozmiaru pliku (mniej niż 5MB)
     const maxSizeInBytes = 5 * 1024 * 1024; // 5MB

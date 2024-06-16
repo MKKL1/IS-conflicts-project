@@ -1,4 +1,3 @@
-// src/utils/dataExport.ts
 import { saveAs } from 'file-saver';
 
 export function exportDataAsJSON(data: any) {

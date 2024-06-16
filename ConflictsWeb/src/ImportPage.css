@@ -1,10 +1,10 @@
-/* styles/ImportPage.css */
+/* ImportPage.css */
 .import-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Zaczynaj od góry */
-    padding-top: 50px; /* Dostosuj w razie potrzeby */
+    justify-content: flex-start;
+    padding-top: 50px;
 }
 
 .import-container .MuiTypography-root,
