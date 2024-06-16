@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         const decodedPayload = JSON.parse(atob(parts[1]));
         console.log("role ", decodedPayload.role)
         let role = Role.USER;
-        if(decodedPayload.role[0] === "ADMIN") {
+        if(decodedPayload.role[0] === "ROLE_ADMIN") {
             role = Role.ADMIN
         }
         setUser(new User(

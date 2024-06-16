@@ -1,4 +1,4 @@
-import {MenuItem, TextField, Button, Box, Container} from "@mui/material";
+import {MenuItem, TextField, Button, Box, Container, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import ChartComponent from "./ChartComponent.tsx";
 import axios from "axios";
@@ -107,7 +107,6 @@ export default function ChartPage() {
         }
     }
 
-
     function handleSelectionModelChange(rowSelectionModel: GridRowSelectionModel, details: GridCallbackDetails) {
         if (rowSelectionModel.length > 0) {
             const selectedConflict = overviewData?.conflicts.find(conflict => conflict.id === rowSelectionModel[0]);
@@ -124,7 +123,6 @@ export default function ChartPage() {
     return (
         <Container maxWidth="xl">
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" p={2}>
-
                 <Box display="flex" gap={3} mb={2}>
                     <TextField
                         select
@@ -142,7 +140,7 @@ export default function ChartPage() {
                     <TextField
                         select
                         sx={{ minWidth: 150 }}
-                        label="Group by"
+                        label="Group by months"
                         value={groupBy}
                         onChange={(event) => {
                             setGroupBy(Number(event.target.value));
@@ -154,6 +152,12 @@ export default function ChartPage() {
                         <MenuItem key={12} value={12}>12</MenuItem>
                     </TextField>
                 </Box>
+
+                {commodityIndex === -1 && (
+                    <Typography variant="h6" color="textSecondary">
+                        Please select a commodity to view the data.
+                    </Typography>
+                )}
 
                 {commodityIndex !== -1 && (
                     <>

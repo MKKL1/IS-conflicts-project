@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { NotificationVariants } from "../NotificationVariants";
 import { validateFile } from "../utils/fileValidation"; // Importowanie funkcji walidacji
+import { useAuthContext } from "../contexts/AuthContext"; // Import the useAuthContext hook
 import "../ImportPage.css"; // Importowanie pliku CSS
 
 // Statyczna lista plików
@@ -32,6 +33,7 @@ const fileApiNameMap: { [key: string]: string } = {
 
 export default function ImportPage() {
     const { pushNotification } = useNotificationContext();
+    const { token } = useAuthContext(); // Retrieve the token from AuthContext
     const [selectedFileType, setSelectedFileType] = useState<string>("");
     const [customFile, setCustomFile] = useState<File | null>(null);
     const [message, setMessage] = useState<string>("");
@@ -42,14 +44,12 @@ export default function ImportPage() {
 
     const handleCustomFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
-            setCustomFile(event.target.files[0])
+            setCustomFile(event.target.files[0]);
         }
     };
 
     const handleImport = () => {
         setMessage(""); // Reset message before new import
-        // let fileToUpload;
-        // let apiName;
 
         if (customFile) {
             const validationError = validateFile(customFile);
@@ -58,44 +58,12 @@ export default function ImportPage() {
                 pushNotification(validationError, NotificationVariants.danger);
                 return;
             }
-            // fileToUpload = customFile;
-            // apiName = "custom";
 
             sendFileToApi(customFile, fileApiNameMap[selectedFileType]);
 
         } else {
             pushNotification("Select a file before uploading", NotificationVariants.danger);
         }
-        // else if (selectedFile) {
-        //     apiName = fileApiNameMap[selectedFile];
-        //     if (!apiName) {
-        //         const errorMessage = "No API name mapped for selected file";
-        //         setMessage(errorMessage);
-        //         pushNotification(errorMessage, NotificationVariants.danger);
-        //         return;
-        //     }
-        //     // Fetch the file from the assets folder
-        //     fetch(`src/assets/resources/${selectedFile}`)
-        //         .then(response => response.blob())
-        //         .then(blob => {
-        //             fileToUpload = new File([blob], selectedFile);
-        //             sendFileToApi(fileToUpload, apiName);
-        //         })
-        //         .catch(error => {
-        //             const errorMessage = "Failed to load the file";
-        //             setMessage(errorMessage);
-        //             pushNotification(errorMessage, NotificationVariants.danger);
-        //             console.error(error);
-        //         });
-        //     return; // Exit early because fetch is asynchronous
-        // } else {
-        //     const warningMessage = "Please select or upload a file";
-        //     setMessage(warningMessage);
-        //     pushNotification(warningMessage, NotificationVariants.warning);
-        //     return;
-        // }
-
-        // sendFileToApi(fileToUpload, apiName);
     };
 
     const sendFileToApi = (file: File, fileType: string) => {
@@ -105,6 +73,7 @@ export default function ImportPage() {
         axios.post(`http://localhost:8080/api/imports/${fileType}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                "Authorization": `Bearer ${token}` // Add the token to the headers
             },
         })
             .then(() => {

@@ -19,14 +19,9 @@ export default function NavigationBar() {
                     {isAuth && user.role == Role.ADMIN &&
                             <Nav.Link as={Link} to='/import'>Import Data</Nav.Link>
                     }
-                    <>
-                    {
-                        console.log("user2", user)
-                    }
-                    </>
                     {isAuth ?
                         <>
-                            <Nav.Link as={Link} to='/profile'>Hello, {user.username}</Nav.Link>
+                            <Nav.Link>Hello, {user.username}</Nav.Link>
                             <Nav.Link onClick={() => {
                                 resetToken();
                                 pushNotification("Logged out", NotificationVariants.info);

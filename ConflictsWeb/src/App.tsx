@@ -28,10 +28,6 @@ function App() {
                   <Route path='/import' element={<AdminGuard>
                       <ImportPage/>
                   </AdminGuard>}/>
-                  <Route path='/profile' element={<AuthGuard>
-                      {/*<Profile/>*/}
-                      <></>
-                  </AuthGuard>}/>
               </Routes>
           </BrowserRouter>
           <Notification message={message} variant={variant}/>

@@ -33,13 +33,6 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
         options: {
             chart: {
                 id: 'commodity-price-chart',
-                // toolbar: {
-                //     autoSelected: 'pan',
-                //     show: false
-                // },
-                // zoom: {
-                //     enabled: false
-                // },
             },
             annotations: {
                 xaxis: conflictRange ? [
@@ -133,7 +126,7 @@ export default function ChartComponent({dataset, groupByMonths, conflictRange}: 
 
 
     return (
-        candleStickData && linearData &&
+        candleStickData &&
         <Paper sx={{ width: '100%', height: 480 }} elevation={3}>
 
             <Chart options={state.options} series={state.series} type="candlestick" height={300} width={'100%'}/>
