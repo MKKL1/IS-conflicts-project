@@ -4,9 +4,13 @@ import islab.project.conflictsserver.commodities.CommoditiesRepository;
 import islab.project.conflictsserver.commodities.CommodityCategory;
 import islab.project.conflictsserver.commodities.CommodityCategoryRepository;
 import islab.project.conflictsserver.commodities.CommodityPrice;
-import jakarta.transaction.Transactional;
+import islab.project.conflictsserver.conflict.ConflictRepository;
+import islab.project.conflictsserver.conflict.converter.ConflictRowData;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,16 +20,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class DataSaveService {
+    private final CommodityCategoryRepository commodityCategoryRepository;
+    private final CommoditiesRepository commodityPriceRepository;
+    private final ConflictRepository conflictRepository;
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void save(List<ConflictRowData> conflictRowDataList) {
+        conflictRepository.saveAll(conflictRowDataList.stream().map(ConflictRowData::toEntity).collect(Collectors.toList()));
+    }
 
-    @Autowired
-    private CommodityCategoryRepository commodityCategoryRepository;
-
-    @Autowired
-    private CommoditiesRepository commodityPriceRepository;
-
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void save(Map<CommodityCategory, List<CommodityPrice>> commodityPriceMap) {
         Set<String> types = commodityPriceMap.keySet().stream().map(CommodityCategory::getType).collect(Collectors.toSet());
         Set<String> regions = commodityPriceMap.keySet().stream().map(CommodityCategory::getRegion).collect(Collectors.toSet());
@@ -52,6 +58,8 @@ public class DataSaveService {
             }
 
             List<LocalDate> dates = prices.stream().map(CommodityPrice::getDate).collect(Collectors.toList());
+
+            //Wielokrotne czytanie dlatego repeatable read
             List<CommodityPrice> existingPrices = commodityPriceRepository.findAllByCommodityCategoryAndDateIn(categoryToUse, dates);
             Set<LocalDate> existingDates = existingPrices.stream().map(CommodityPrice::getDate).collect(Collectors.toSet());
 

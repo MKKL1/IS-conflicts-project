@@ -22,15 +22,13 @@ import java.util.Map;
 @RequestMapping("/api/imports")
 @Slf4j
 public class ImportsController {
+    private final DataImportService dataImportService;
+    private final DataSaveService dataSaveService;
 
-    @Autowired
-    private ConflictRepository conflictRepository;
-
-    @Autowired
-    private DataImportService dataImportService;
-
-    @Autowired
-    private DataSaveService dataSaveService;
+    public ImportsController(DataImportService dataImportService, DataSaveService dataSaveService) {
+        this.dataImportService = dataImportService;
+        this.dataSaveService = dataSaveService;
+    }
 
     @PostMapping("/{name}")
     public ResponseEntity<?> importData(@PathVariable("name") String name, @RequestParam("file") MultipartFile file) {
@@ -38,7 +36,7 @@ public class ImportsController {
             switch (name) {
                 case "conflicts":
                     List<ConflictRowData> conflictData = dataImportService.importConflictData(inputStream);
-                    conflictRepository.saveConflictList(conflictData);
+                    dataSaveService.save(conflictData);
                     break;
                 case "cmo-historical":
                     Map<CommodityCategory, List<CommodityPrice>> commodityData = dataImportService.importCMOHistoricalData(inputStream);
